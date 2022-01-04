@@ -1,20 +1,40 @@
+import os
 import arcade
 from win32api import GetKeyState, keybd_event
 from win32con import VK_CAPITAL, VK_NUMLOCK, VK_SCROLL, KEYEVENTF_KEYUP
-from typing import Tuple
-from .const import SCREEN_SIZE, TITLE
-from .const import BG_COLOR
+from typing import Tuple, Dict, Any, NoReturn, List
+from .const import SCREEN_SIZE, TITLE, LAYER_NAME_PLAYER, LAYER_NAME_ENEMIES, BG_COLOR
+from .player import PlayerCharacter
 
 
-def get_key_from_value(dictionary, value):  # Return key or keys from value
+def get_key_from_value(dictionary: Dict, value) -> Any:  # Return key or keys from value
+    """
+    Function for getting key from provided value
+
+    :param dictionary: Dictionary inside where we looking for a key
+    :param value: Dictionary value for key finding
+    :return: Key from dictionary if found, none if not found
+    """
     for k, v in dictionary.items():
         if v == value:
             return k
     return None
 
 
-def checking_lockkey_states():  # Checking states of keyboard buttons
-    def disable_lockkey(key):  # Disable states of Caps Lock, Num Lock and Scroll Lock buttons on keyboard
+def checking_lockkey_states() -> NoReturn:  # Checking states of keyboard buttons
+    """
+    Check and disable all lock keys like Num, Scroll and Caps lock
+
+    :return: No return
+    """
+
+    def disable_lockkey(key: int) -> NoReturn:  # Disable states of Caps Lock, Num Lock and Scroll Lock buttons on keyboard
+        """
+        Internal function for key state checking
+
+        :param key: Key for keybd_event
+        :return: No return
+        """
         keybd_event(key, 0)
         keybd_event(key, 0, KEYEVENTF_KEYUP)
         pass
@@ -28,7 +48,7 @@ def checking_lockkey_states():  # Checking states of keyboard buttons
             disable_lockkey(_key)
 
 
-def set_window_with_size(size: int = 1, *args):
+def set_window_with_size(size: int = 1, *args) -> Any:
     """
     Sets window size from game settings or creates a new window object with desired size
 
@@ -54,7 +74,19 @@ def set_window_with_size(size: int = 1, *args):
     window.set_size(screen_w, screen_h)
 
 
-@property
+def set_player(p_list: list, scene: Any) -> NoReturn:
+    """
+    Creating and inserting player object into player list (for future drawing)
+
+    :param scene: Actual scene
+    :param p_list: Player list
+    """
+
+    player = PlayerCharacter()
+    scene.add_sprite(LAYER_NAME_PLAYER, player)
+    p_list.append(player)
+
+
 def get_window_size() -> Tuple:
     """
     Get current windows size
@@ -65,6 +97,17 @@ def get_window_size() -> Tuple:
     return current_window.get_size()
 
 
-def set_bg_color(color: Tuple = BG_COLOR):
+def game_dir() -> str:
+    _game_dir = os.path.dirname(os.path.abspath(__file__))
+    return str(_game_dir)
+
+
+def set_bg_color(color: Tuple = BG_COLOR) -> None:
+    """
+    Set window's background color
+
+    :param color: Desired color
+    :return: None
+    """
     return arcade.set_background_color(color)
 

@@ -1,7 +1,8 @@
 import arcade
 import arcade.gui
-from .func import set_bg_color
+from .func import set_bg_color, set_window_with_size
 from map.map1.stage.stage import GameViewStart
+
 
 class MainMenu(arcade.View):
     """ Class to manage the game over view """
@@ -30,20 +31,20 @@ class MainMenu(arcade.View):
         self.v_box.add(quit_button.with_space_around(bottom=20))
 
         @start_button.event("on_click")
-        def on_click_start(event):
+        def on_click_start():
             start_view = GameViewStart()
             self.manager.disable()
             self.window.show_view(start_view)
 
         # use a decorator to handle on_click events
         @settings_button.event("on_click")
-        def on_click_settings(event):
+        def on_click_settings():
             settings_view = Settings()
             self.manager.disable()
             self.window.show_view(settings_view)
 
         @quit_button.event("on_click")
-        def on_click_exit(event):
+        def on_click_exit():
             arcade.exit()
 
         # Create a widget to hold the v_box widget, that will center the buttons
@@ -57,7 +58,6 @@ class MainMenu(arcade.View):
     def on_draw(self):
         arcade.start_render()
         self.manager.draw()
-
 
 
 class Settings(arcade.View):
@@ -87,14 +87,14 @@ class Settings(arcade.View):
         self.v_box.add(back_button.with_space_around(bottom=20))
 
         @video_button.event("on_click")
-        def on_click_video(event):
+        def on_click_video():
             video_view = SettingsVideo()
             self.manager.disable()
             self.window.show_view(video_view)
 
         # use a decorator to handle on_click events
         @sound_button.event("on_click")
-        def on_click_sound(event):
+        def on_click_sound():
             message_box = arcade.gui.UIMessageBox(
                 width=300,
                 height=200,
@@ -106,7 +106,7 @@ class Settings(arcade.View):
             self.manager.add(message_box)
 
         @back_button.event("on_click")
-        def on_click_back(event):
+        def on_click_back():
             self.manager.disable()
             self.window.show_view(MainMenu())
 
@@ -164,20 +164,20 @@ class SettingsVideo(arcade.View):
         self.v_box.add(back_button.with_space_around(bottom=20))
 
         @small_size_button.event("on_click")
-        def on_click_start(event):
+        def on_click_start():
             set_window_with_size(0, self.window)
 
         # use a decorator to handle on_click events
         @normal_size_button.event("on_click")
-        def on_click_settings(event):
+        def on_click_settings():
             set_window_with_size(1, self.window)
 
         @large_size_button.event("on_click")
-        def on_click_exit(event):
+        def on_click_exit():
             set_window_with_size(2, self.window)
 
         @back_button.event("on_click")
-        def on_click_exit(event):
+        def on_click_exit():
             settings = Settings()
             self.manager.disable()
             self.window.show_view(settings)
