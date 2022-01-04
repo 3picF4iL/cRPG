@@ -1,7 +1,7 @@
 import arcade
 import arcade.gui
 from .func import set_bg_color
-from map.map1.stages.stages import GameViewStart
+from map.map1.stage.stage import GameViewStart
 
 class MainMenu(arcade.View):
     """ Class to manage the game over view """

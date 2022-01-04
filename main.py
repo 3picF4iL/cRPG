@@ -1,6 +1,6 @@
 import arcade
 from general.func import set_window_with_size
-from general.map.map1.stages.stages import GameViewStart
+from general.map.map1.stage.stage import GameViewStart
 
 
 def main():
