@@ -1,5 +1,6 @@
 # cRPG
-=============================================
+--------
+
 05.01.2022 - 1:20
 1. Added character idle animation and walking animation
 2. Found a way to reduce amount of graphic files to put few frames into one sequence image
@@ -14,7 +15,8 @@ Next steps:
 *Adding and refactor enemy.py file
 
 
-==============================================
+---------
+
 04.01.2022 - 18:40
 1. Full code rewriting
 2. Move main map code to the separate file - preparing for more than one map
