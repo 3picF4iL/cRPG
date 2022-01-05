@@ -10,9 +10,13 @@
 
 
 Next steps: 
+
 *Adding attack ability for player character
+
 *Adding GUI and printing character stats
+
 *Adding and refactor enemy.py file
+
 
 
 ---------
