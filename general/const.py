@@ -29,13 +29,26 @@ player_map1_opt = {
     "scale": 0.2,
     "center_x": 200,
     "center_y": 200,
-    "graphic_location": "graphic/player/walking1.png",
+    "graphic_location": "graphic/player/movement/",
     "movement_speed": 200,
     "move_up": False,
     "move_down": False,
     "move_right": False,
     "move_left": False,
     "is_moving": False,
+    "face_direction": 0,  # Left = 1, right = 0
+    "textures_walk_file": "walking_18.png",
+    "textures_walk_nr": 0,
+    "textures_walk": [],
+    "animation_walk_speed": 4,
+    "textures_attack_file": "attacking_15.png",
+    "textures_attack_nr": 0,
+    "textures_attack": [],
+    "animation_attack_speed": 4,
+    "textures_idle_file": "idle_12.png",
+    "textures_idle_nr": 0,
+    "textures_idle": [],
+    "animation_idle_speed": 4
 }
 
 ##################

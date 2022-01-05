@@ -1,5 +1,6 @@
 import arcade
 import arcade.gui
+from general.player import PlayerCharacter
 from general.func import set_bg_color, set_player, checking_lockkey_states
 from general.const import map1_opt, MOVEMENT_KEYS
 from general.const import (LAYER_NAME_PATH,
@@ -60,7 +61,7 @@ class GameViewStart(arcade.View):
         }
         self.stage["tile_map"] = arcade.load_tilemap(map_name, self.stage["map_opt"]["scale"], layer_options)
         self.stage["scene"] = arcade.Scene.from_tilemap(self.stage["tile_map"])
-        set_player(self.stage["player_list"], self.stage["scene"])
+        set_player(PlayerCharacter, self.stage["player_list"], self.stage["scene"])
         self.stage["physic_engine"] = arcade.PhysicsEngineSimple(self.stage["player_list"][0],
                                                                  [
                                                                      self.stage["scene"].

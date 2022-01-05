@@ -1,5 +1,6 @@
 import arcade
-from .const import player_map1_opt, MOVEMENT_KEYS
+from .const import player_map1_opt
+from .func import load_texture_pair_mod
 
 
 class CharacterStats:
@@ -28,9 +29,19 @@ class PlayerCharacter(arcade.Sprite, CharacterStats):
         self.scale = player_map1_opt["scale"]
         self.cur_texture_index = 0
         self.player_variables = player_map1_opt
-        # Load textures for idle standing
-        self.idle_texture_pair = arcade.load_texture_pair(player_map1_opt["graphic_location"])
-        self.texture = self.idle_texture_pair[0]
+
+        self.player_variables["textures_walk"],\
+        self.player_variables["textures_walk_nr"] = load_texture_pair_mod(self.player_variables["graphic_location"]
+                                                                          + self.player_variables["textures_walk_file"],
+                                                                          720, 0, 490)
+        self.player_variables["textures_idle"],\
+        self.player_variables["textures_idle_nr"] = load_texture_pair_mod(self.player_variables["graphic_location"]
+                                                                       + self.player_variables["textures_idle_file"],
+                                                                       720, 0, 490)
+        # self.player_variables["textures_attack"] = load_texture_pair_mod(self.player_variables["graphic_location"]
+        #                                                                  + self.player_variables["textures_attack_file"], # noqa
+        #                                                                  720, 0, 490)
+
         self.hit_box = ([-100, -200], [-100, 0], [100, 0], [100, -200])
 
     def start_moving(self, key):
@@ -62,9 +73,11 @@ class PlayerCharacter(arcade.Sprite, CharacterStats):
 
         if self.player_variables["move_right"]:
             self.center_x = self.center_x + self.player_variables["movement_speed"] * delta_time
+            self.player_variables["face_direction"] = 0
 
         if self.player_variables["move_left"]:
             self.center_x = self.center_x - self.player_variables["movement_speed"] * delta_time
+            self.player_variables["face_direction"] = 1
 
         if not self.player_variables["move_up"] and not self.player_variables["move_down"]:
             self.change_y = 0
@@ -74,8 +87,24 @@ class PlayerCharacter(arcade.Sprite, CharacterStats):
         if self.player_variables["move_up"] or self.player_variables["move_down"] or \
                 self.player_variables["move_right"] or self.player_variables["move_left"]:
             self.player_variables["is_moving"] = True
+            self.move_animation()
         else:
             self.player_variables["is_moving"] = False
+            self.idle_animation()
+
+    def move_animation(self):
+        self.cur_texture_index += 1
+        if self.cur_texture_index >= \
+                self.player_variables["textures_walk_nr"] * self.player_variables["animation_walk_speed"]:
+            self.cur_texture_index = 0
+        self.texture = self.player_variables["textures_walk"][self.cur_texture_index // self.player_variables["animation_walk_speed"]][self.player_variables["face_direction"]]
+
+    def idle_animation(self):
+        self.cur_texture_index += 1
+        if self.cur_texture_index >= \
+                self.player_variables["textures_idle_nr"] * self.player_variables["animation_idle_speed"]:
+            self.cur_texture_index = 0
+        self.texture = self.player_variables["textures_idle"][self.cur_texture_index // self.player_variables["animation_idle_speed"]][self.player_variables["face_direction"]]
 
     def on_update(self, delta_time: float = 1 / 60):
         self.move(delta_time)

@@ -1,10 +1,10 @@
 import os
+import re
 import arcade
 from win32api import GetKeyState, keybd_event
 from win32con import VK_CAPITAL, VK_NUMLOCK, VK_SCROLL, KEYEVENTF_KEYUP
 from typing import Tuple, Dict, Any, NoReturn, List
 from .const import SCREEN_SIZE, TITLE, LAYER_NAME_PLAYER, LAYER_NAME_ENEMIES, BG_COLOR
-from .player import PlayerCharacter
 
 
 def get_key_from_value(dictionary: Dict, value) -> Any:  # Return key or keys from value
@@ -74,17 +74,18 @@ def set_window_with_size(size: int = 1, *args) -> Any:
     window.set_size(screen_w, screen_h)
 
 
-def set_player(p_list: list, scene: Any) -> NoReturn:
+def set_player(player, p_list: list, scene: Any) -> NoReturn:
     """
     Creating and inserting player object into player list (for future drawing)
 
+    :param player: Player class
     :param scene: Actual scene
     :param p_list: Player list
     """
 
-    player = PlayerCharacter()
-    scene.add_sprite(LAYER_NAME_PLAYER, player)
-    p_list.append(player)
+    player_ = player()
+    scene.add_sprite(LAYER_NAME_PLAYER, player_)
+    p_list.append(player_)
 
 
 def get_window_size() -> Tuple:
@@ -111,3 +112,31 @@ def set_bg_color(color: Tuple = BG_COLOR) -> None:
     """
     return arcade.set_background_color(color)
 
+
+def load_texture_pair_mod(filename, width, y, height, hit_box_algorithm: str = "Simple"):
+    """
+    Load a texture pair, with the second being a mirror image of the first.
+    Useful when doing animations and the character can face left/right.
+
+    amount is taken from texture name - place number of frames in the name
+    """
+    textures_list = []  # I know it is tuple but the name is more understandable
+    amount = [int(s) for s in re.findall(r'\d+', filename.split('/')[-1:][0])][0]
+
+    for multiplying in range(amount):
+        textures_list.append([
+            arcade.texture.load_texture(filename,
+                                        hit_box_algorithm=hit_box_algorithm,
+                                        x=multiplying*width,
+                                        y=y,
+                                        width=width,
+                                        height=height),
+            arcade.texture.load_texture(filename,
+                                        flipped_horizontally=True,
+                                        hit_box_algorithm=hit_box_algorithm,
+                                        x=multiplying*width,
+                                        y=y,
+                                        width=width,
+                                        height=height)
+        ])
+    return textures_list, amount
