@@ -140,3 +140,20 @@ def load_texture_pair_mod(filename, width, y, height, hit_box_algorithm: str = "
                                         height=height)
         ])
     return textures_list, amount
+
+
+def center_camera_to_player(camera, player_x, player_y):
+    """
+    Move camera to player
+    :return: no return
+    """
+    screen_center_x = player_x - (camera.viewport_width / 2)
+    screen_center_y = player_y - (camera.viewport_height / 2)
+
+    if screen_center_x < 0:
+        screen_center_x = 0
+    if screen_center_y < 0:
+        screen_center_y = 0
+    player_centered = screen_center_x, screen_center_y
+    camera.move_to(player_centered, speed=1)
+
