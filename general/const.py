@@ -54,6 +54,7 @@ player_map1_opt = {
     "move_left": False,
     "is_moving": False,
     "is_show_stats": False,
+    "is_attacking": False,
     "face_direction": 0,  # Left = 1, right = 0
 
 }
@@ -111,7 +112,9 @@ warrior_stats = {
         "exp": 0,
         "diff": 1,  # 0, 1, 2 - 0 the lowest, 2 - the highest
         "place": "None",
-        "dc": 100
+        "dc": 100,
+        "mvm": 10,
+        "as": 5
         },
 
     # Char resistances
@@ -124,14 +127,16 @@ warrior_stats = {
 
     "char_texture": {
         "graphic_location": "graphic/player/movement/",
+        "animation_last_state": 0,  # 0 - idle, 1 - moving, 2 - attacking
+        "animation_cur_state": 0,
         "textures_walk_file": "walking_18.png",
         "textures_walk_nr": 0,
         "textures_walk": [],
         "animation_walk_speed": 2,
-        "textures_attack_file": "attacking_15.png",
+        "textures_attack_file": "attack_12.png",
         "textures_attack_nr": 0,
         "textures_attack": [],
-        "animation_attack_speed": 4,
+        "animation_attack_speed": 5,
         "textures_idle_file": "idle_17.png",
         "textures_idle_nr": 0,
         "textures_idle": [],
@@ -273,7 +278,9 @@ SHORTCUTS = {
     "dc": "Drop Chance",
     "gb": "Gold Bonus",
     "dmg_min": "Min Damage",
-    "dmg_max": "Max Damage"
+    "dmg_max": "Max Damage",
+    "mvm": "Movement speed",
+    "as": "Attack Speed"
 }
 
 DND = ["max_hp", "max_mana", "actual_health_points", "actual_mana_points"]

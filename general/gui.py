@@ -129,6 +129,8 @@ class GUI:
         """
         arcade.draw_text(f"DEBUG: x: {self.cur_texture_index}",
                          100, 20, [255, 255, 0], 8, 20, 'left', bold=True)
+        arcade.draw_text(f"DEBUG: Ani state: {self.player_texture['animation_cur_state']}",
+                         200, 20, [255, 255, 0], 8, 20, 'left', bold=True)
 
     def print_items_info(self, item_list, show):
         if show:
