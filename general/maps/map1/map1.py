@@ -2,6 +2,7 @@ import arcade
 import arcade.gui
 from general.player import PlayerCharacter
 from general.func import set_bg_color, set_player, checking_lockkey_states, get_window_size, center_camera_to_player
+from general.pause_menu import PauseMenu
 from general.const import map1_opt, MOVEMENT_KEYS, stage_map1_opt
 from general.const import (LAYER_NAME_PATH,
                            LAYER_NAME_WALLS,
@@ -12,13 +13,12 @@ from general.const import (LAYER_NAME_PATH,
 class GameViewStart(arcade.View):
     def __init__(self):
         super().__init__()
+        super(GameViewStart, self).__init__()
+        self.stage_name = "Map_1"
         set_bg_color()
         checking_lockkey_states()  # Turn off LOCK's keys
         self.screen_w, self.screen_h = get_window_size()
         self.stage = stage_map1_opt
-
-    def on_show(self):
-        self.setup()
 
     def setup(self):
         map_name = map1_opt["map1_location"]
@@ -47,15 +47,18 @@ class GameViewStart(arcade.View):
         self.stage["player_list"][0].print_hud()
 
     def on_key_press(self, symbol: int, modifiers: int):
+        if symbol == arcade.key.ESCAPE:
+            pausemenu = PauseMenu(self)
+            self.window.show_view(pausemenu)
 
         if symbol in MOVEMENT_KEYS[0] or symbol in MOVEMENT_KEYS[1]:
             self.stage["player_list"][0].start_moving(symbol)
         else:
-            self.stage["player_list"][0].func_keys(symbol   )
+            self.stage["player_list"][0].func_keys(symbol)
         pass
 
     def on_key_release(self, _symbol: int, _modifiers: int):
-        if _symbol in MOVEMENT_KEYS[0] or _symbol in  MOVEMENT_KEYS[1]:
+        if _symbol in MOVEMENT_KEYS[0] or _symbol in MOVEMENT_KEYS[1]:
             self.stage["player_list"][0].stop_moving(_symbol)
         else:
             self.stage["player_list"][0].func_keys(_symbol+1000)

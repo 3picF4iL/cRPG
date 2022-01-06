@@ -157,3 +157,12 @@ def center_camera_to_player(camera, player_x, player_y):
     player_centered = screen_center_x, screen_center_y
     camera.move_to(player_centered, speed=1)
 
+
+def rescale(view):
+    screen_w, screen_h = get_window_size()
+    if view.screen_w != screen_w and view.screen_h != screen_h:
+        view.screen_w = screen_w
+        view.screen_h = screen_h
+        view.stage["camera"].resize(screen_w, screen_h)
+        view.stage["gui_camera"].resize(screen_w, screen_h)
+        view.stage["player_list"][0].rescale()

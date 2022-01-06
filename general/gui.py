@@ -40,7 +40,7 @@ class GUI:
     def print_player_main_stats(self, transparent):
         green = arcade.color.GREEN
         red = arcade.color.RED
-        black = arcade.color.BLACK
+        black = arcade.color.WHITE_SMOKE
         blue = arcade.color.BLUE
         yellow = arcade.color.YELLOW
         if transparent:
@@ -138,3 +138,6 @@ class GUI:
                 if not arcade.get_distance_between_sprites(self, item) > 300:
                     arcade.draw_text(f"{item.print_created_item()}", item.center_x, item.center_y + item.height/2,
                                      [0, 0, 0], 10, 100, 'left', bold=True, multiline=True)
+
+    def rescale(self):
+        self.s_w, self.s_h = get_window_size()

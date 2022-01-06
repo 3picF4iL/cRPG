@@ -28,7 +28,7 @@ LAYER_NAME_ENEMIES = "Enemies"
 LAYER_NAME_MEADOW = "Meadow"
 
 map1_opt = {
-    "map1_location": "general/map/map1/map1.json",
+    "map1_location": "general/maps/map1/map1.json",
     "scale": 0.6,
     "layer_options": {
             LAYER_NAME_WALLS: {
@@ -60,14 +60,14 @@ player_map1_opt = {
 }
 
 stage_map1_opt = {
-            # Elements lists appearing on the map
-            "player_list": arcade.SpriteList(),        # List of the players on the map
-            "enemy_list": arcade.SpriteList(),         # List of the enemies on the map
-            "item_on_floor_list": arcade.SpriteList(),     # List of the items on the map
+            # Elements lists appearing on the maps
+            "player_list": arcade.SpriteList(),        # List of the players on the maps
+            "enemy_list": arcade.SpriteList(),         # List of the enemies on the maps
+            "item_on_floor_list": arcade.SpriteList(),     # List of the items on the maps
 
             # Elements that need to be placed in the code
             "debugger": None,           # For the debug console
-            "tile_map": None,           # Loading map from file
+            "tile_map": None,           # Loading maps from file
             "scene": None,              # Creating first scene
             "physics_engine": None,     # Physic engine
             "camera": None,             # Camera instance
@@ -75,7 +75,7 @@ stage_map1_opt = {
             "gui_camera": None,         # Camera GUI instance
             "map_opt": map1_opt,
 
-            # Flag Information appearing on the map
+            # Flag Information appearing on the maps
             "show_char_stat": False,            # Show character stats on the right side of the screen
             "show_floor_item_stats": False,     # Show items name that lies on the floor
 
@@ -136,7 +136,7 @@ warrior_stats = {
         "textures_attack_file": "attack_12.png",
         "textures_attack_nr": 0,
         "textures_attack": [],
-        "animation_attack_speed": 5,
+        "animation_attack_speed": 3,
         "textures_idle_file": "idle_17.png",
         "textures_idle_nr": 0,
         "textures_idle": [],
