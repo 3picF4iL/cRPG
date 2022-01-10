@@ -56,6 +56,8 @@ player_map1_opt = {
     "is_show_stats": False,
     "is_attacking": False,
     "face_direction": 0,  # Left = 1, right = 0
+    "moving_dest_x": None,
+    "moving_dest_y": None
 
 }
 
@@ -157,6 +159,12 @@ MOVEMENT_KEYS = [
         arcade.key.RIGHT,
         arcade.key.LEFT
     ]
+]
+
+FUNC_KEYS = [
+    arcade.key.Q,
+    arcade.key.TAB,
+    arcade.key.LALT
 ]
 
 NEXT_LEVEL_EXP = {

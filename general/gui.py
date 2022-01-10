@@ -127,10 +127,12 @@ class GUI:
         :param score: Some input
         :return: No return
         """
-        arcade.draw_text(f"DEBUG: x: {self.cur_texture_index}",
+        arcade.draw_text(f"DEBUG:",
                          100, 20, [255, 255, 0], 8, 20, 'left', bold=True)
-        arcade.draw_text(f"DEBUG: Ani state: {self.player_texture['animation_cur_state']}",
+        arcade.draw_text(f"Att: {self.player_variables['is_attacking']}",
                          200, 20, [255, 255, 0], 8, 20, 'left', bold=True)
+        arcade.draw_text(f"Mov: {self.player_variables['is_moving']}",
+                         300, 20, [255, 255, 0], 8, 20, 'left', bold=True)
 
     def print_items_info(self, item_list, show):
         if show:

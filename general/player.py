@@ -1,3 +1,4 @@
+import math
 import arcade
 from .const import player_map1_opt, warrior_stats
 from .func import load_texture_pair_mod
@@ -54,71 +55,71 @@ class PlayerCharacter(arcade.Sprite, GUI, CharacterStats):
 
         self.hit_box = ([-100, -200], [-100, 0], [100, 0], [100, -200])
 
-    def func_keys(self, key):
+    def func_keys(self, key, mod):
         if key == arcade.key.TAB:
             self.player_variables["is_show_stats"] = False if self.player_variables["is_show_stats"] else True
-        if key == arcade.key.Q:
+        elif mod == arcade.key.MOD_ALT:
             self.player_variables["is_attacking"] = True
-        # elif key == arcade.key.Q + 1000:
-        #     self.player_variables["is_attacking"] = False
 
-    def start_moving(self, key):
-        if key == arcade.key.UP:
-            self.player_variables["move_up"] = True
-        elif key == arcade.key.DOWN:
-            self.player_variables["move_down"] = True
-        elif key == arcade.key.RIGHT:
-            self.player_variables["move_right"] = True
-        elif key == arcade.key.LEFT:
-            self.player_variables["move_left"] = True
+    def set_move(self, dest_x, dest_y):
+        # self.s_w, self.s_h
+        screen_center_x = self.s_w / 2
+        screen_center_y = self.s_h / 2
+        if self.center_x >= screen_center_x:
+            x_change = dest_x - screen_center_x
+            self.player_variables["moving_dest_x"] = self.center_x + x_change
+        else:
+            self.player_variables["moving_dest_x"] = dest_x
 
-    def stop_moving(self, key):
-        if key == arcade.key.UP:
-            self.player_variables["move_up"] = False
-        elif key == arcade.key.DOWN:
-            self.player_variables["move_down"] = False
-        elif key == arcade.key.RIGHT:
-            self.player_variables["move_right"] = False
-        elif key == arcade.key.LEFT:
-            self.player_variables["move_left"] = False
+        if self.center_y >= screen_center_y:
+            y_change = dest_y - screen_center_y
+            self.player_variables["moving_dest_y"] = self.center_y + y_change
+        else:
+            self.player_variables["moving_dest_y"] = dest_y
+
+        self.player_variables["is_moving"] = True
+        self.face_dir_change(self.player_variables["moving_dest_x"] - self.center_x)
+
+    def moving(self, _x, _y, delta_time):
+
+        if self.player_variables["is_moving"] and \
+                self.player_variables["moving_dest_x"] and \
+                self.player_variables["moving_dest_y"]:
+
+            goto_x, goto_y = _x, _y
+            x_diff, y_diff = goto_x - self.center_x, goto_y - self.center_y
+
+            if math.fabs(round(x_diff)) <= 1 and math.fabs(round(y_diff)) <= 1:
+                self.player_variables["is_moving"] = False
+                self.player_variables["moving_dest_x"] = None
+                self.player_variables["moving_dest_y"] = None
+                return True
+
+            angle = math.atan2(y_diff, x_diff)
+            self.center_x += math.cos(angle) * self.player_variables["movement_speed"] * delta_time
+            self.center_y += math.sin(angle) * self.player_variables["movement_speed"] * delta_time
+            self.move_animation(delta_time)
+        elif self.player_variables["is_attacking"]:
+            self.attack_animation(delta_time)
+        else:
+            self.idle_animation(delta_time)
+        self.player_texture["animation_last_state"] = self.player_texture["animation_cur_state"]
 
     def _check_a_state(self):
         if self.player_texture["animation_cur_state"] != self.player_texture["animation_last_state"]:
             self.cur_texture_index = 0
 
-    def move(self, delta_time):
+    def set_movement_speed(self, value):
+        self.player_variables["movement_speed"] = value
 
-        if self.player_variables["move_up"]:
-            self.center_y = self.center_y + self.player_variables["movement_speed"] * delta_time
-        if self.player_variables["move_down"]:
-            self.center_y = self.center_y - self.player_variables["movement_speed"] * delta_time
+    def change_movement_speed(self, value):
+        self.player_variables["movement_speed"] += value
 
-        if self.player_variables["move_left"]:
-            self.center_x = self.center_x - self.player_variables["movement_speed"] * delta_time
-            self.player_variables["face_direction"] = 1
-        if self.player_variables["move_right"]:
-            self.center_x = self.center_x + self.player_variables["movement_speed"] * delta_time
+    def face_dir_change(self, x):
+        if x > 0:
             self.player_variables["face_direction"] = 0
-        #
-        # if not self.player_variables["move_up"] and not self.player_variables["move_down"]:
-        #     self.change_y = 0
-        # if not self.player_variables["move_right"] and not self.player_variables["move_left"]:
-        #     self.change_x = 0
-
-        if self.player_variables["move_up"] or self.player_variables["move_down"] or \
-                self.player_variables["move_right"] or self.player_variables["move_left"] or \
-                self.player_variables["is_attacking"]:
-            self.player_variables["is_moving"] = True
-        else:
-            self.player_variables["is_moving"] = False
-            self.idle_animation(delta_time)
-
-        if self.player_variables["is_moving"] and not self.player_variables["is_attacking"]:
-            self.move_animation(delta_time)
-        elif self.player_variables["is_attacking"]:
-            self.attack_animation(delta_time)
-
-        self.player_texture["animation_last_state"] = self.player_texture["animation_cur_state"]
+        elif x < 0:
+            self.player_variables["face_direction"] = 1
 
     def move_animation(self, delta_time):
         self.player_texture["animation_cur_state"] = 1
@@ -127,7 +128,6 @@ class PlayerCharacter(arcade.Sprite, GUI, CharacterStats):
         if self.cur_texture_index >= \
                 self.player_texture["textures_walk_nr"] * self.player_texture["animation_walk_speed"]:
             self.cur_texture_index = 0
-            self.player_texture["animation_state"] = False
         self.texture = self.player_texture["textures_walk"][self.cur_texture_index // self.player_texture["animation_walk_speed"]][self.player_variables["face_direction"]]
 
     def idle_animation(self, delta_time):
@@ -142,13 +142,17 @@ class PlayerCharacter(arcade.Sprite, GUI, CharacterStats):
     def attack_animation(self, delta_time):
         self.player_texture["animation_cur_state"] = 2
         self._check_a_state()
+        self.set_movement_speed(50)
         self.cur_texture_index += 1
         if self.cur_texture_index >= \
                 self.player_texture["textures_attack_nr"] * self.player_texture["animation_attack_speed"]:
             self.cur_texture_index = 0
             self.player_variables["is_attacking"] = False
+            self.set_movement_speed(100)
         self.texture = self.player_texture["textures_attack"][self.cur_texture_index
                                                               // self.player_texture["animation_attack_speed"]][self.player_variables["face_direction"]]
 
     def on_update(self, delta_time: float = 1 / 60):
-        self.move(delta_time)
+        self.moving(self.player_variables["moving_dest_x"],
+                    self.player_variables["moving_dest_y"],
+                    delta_time)
