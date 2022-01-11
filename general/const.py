@@ -28,7 +28,7 @@ LAYER_NAME_ENEMIES = "Enemies"
 LAYER_NAME_MEADOW = "Meadow"
 
 map1_opt = {
-    "map1_location": "general/map/map1/map1.json",
+    "map1_location": "general/maps/map1/map1.json",
     "scale": 0.6,
     "layer_options": {
             LAYER_NAME_WALLS: {
@@ -54,19 +54,22 @@ player_map1_opt = {
     "move_left": False,
     "is_moving": False,
     "is_show_stats": False,
+    "is_attacking": False,
     "face_direction": 0,  # Left = 1, right = 0
+    "moving_dest_x": None,
+    "moving_dest_y": None
 
 }
 
 stage_map1_opt = {
-            # Elements lists appearing on the map
-            "player_list": arcade.SpriteList(),        # List of the players on the map
-            "enemy_list": arcade.SpriteList(),         # List of the enemies on the map
-            "item_on_floor_list": arcade.SpriteList(),     # List of the items on the map
+            # Elements lists appearing on the maps
+            "player_list": arcade.SpriteList(),        # List of the players on the maps
+            "enemy_list": arcade.SpriteList(),         # List of the enemies on the maps
+            "item_on_floor_list": arcade.SpriteList(),     # List of the items on the maps
 
             # Elements that need to be placed in the code
             "debugger": None,           # For the debug console
-            "tile_map": None,           # Loading map from file
+            "tile_map": None,           # Loading maps from file
             "scene": None,              # Creating first scene
             "physics_engine": None,     # Physic engine
             "camera": None,             # Camera instance
@@ -74,7 +77,7 @@ stage_map1_opt = {
             "gui_camera": None,         # Camera GUI instance
             "map_opt": map1_opt,
 
-            # Flag Information appearing on the map
+            # Flag Information appearing on the maps
             "show_char_stat": False,            # Show character stats on the right side of the screen
             "show_floor_item_stats": False,     # Show items name that lies on the floor
 
@@ -111,7 +114,9 @@ warrior_stats = {
         "exp": 0,
         "diff": 1,  # 0, 1, 2 - 0 the lowest, 2 - the highest
         "place": "None",
-        "dc": 100
+        "dc": 100,
+        "mvm": 10,
+        "as": 5
         },
 
     # Char resistances
@@ -124,14 +129,16 @@ warrior_stats = {
 
     "char_texture": {
         "graphic_location": "graphic/player/movement/",
+        "animation_last_state": 0,  # 0 - idle, 1 - moving, 2 - attacking
+        "animation_cur_state": 0,
         "textures_walk_file": "walking_18.png",
         "textures_walk_nr": 0,
         "textures_walk": [],
         "animation_walk_speed": 2,
-        "textures_attack_file": "attacking_15.png",
+        "textures_attack_file": "attack_12.png",
         "textures_attack_nr": 0,
         "textures_attack": [],
-        "animation_attack_speed": 4,
+        "animation_attack_speed": 3,
         "textures_idle_file": "idle_17.png",
         "textures_idle_nr": 0,
         "textures_idle": [],
@@ -152,6 +159,12 @@ MOVEMENT_KEYS = [
         arcade.key.RIGHT,
         arcade.key.LEFT
     ]
+]
+
+FUNC_KEYS = [
+    arcade.key.Q,
+    arcade.key.TAB,
+    arcade.key.LALT
 ]
 
 NEXT_LEVEL_EXP = {
@@ -273,7 +286,9 @@ SHORTCUTS = {
     "dc": "Drop Chance",
     "gb": "Gold Bonus",
     "dmg_min": "Min Damage",
-    "dmg_max": "Max Damage"
+    "dmg_max": "Max Damage",
+    "mvm": "Movement speed",
+    "as": "Attack Speed"
 }
 
 DND = ["max_hp", "max_mana", "actual_health_points", "actual_mana_points"]

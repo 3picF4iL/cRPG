@@ -1,6 +1,8 @@
 import os
 import re
 import arcade
+import arcade.gui
+from arcade.arcade_types import Point
 from win32api import GetKeyState, keybd_event
 from win32con import VK_CAPITAL, VK_NUMLOCK, VK_SCROLL, KEYEVENTF_KEYUP
 from typing import Tuple, Dict, Any, NoReturn, List
@@ -145,6 +147,7 @@ def load_texture_pair_mod(filename, width, y, height, hit_box_algorithm: str = "
 def center_camera_to_player(camera, player_x, player_y):
     """
     Move camera to player
+
     :return: no return
     """
     screen_center_x = player_x - (camera.viewport_width / 2)
@@ -157,3 +160,98 @@ def center_camera_to_player(camera, player_x, player_y):
     player_centered = screen_center_x, screen_center_y
     camera.move_to(player_centered, speed=1)
 
+
+def rescale(view):
+    screen_w, screen_h = get_window_size()
+    if view.screen_w != screen_w and view.screen_h != screen_h:
+        view.screen_w = screen_w
+        view.screen_h = screen_h
+        view.stage["camera"].resize(screen_w, screen_h)
+        view.stage["gui_camera"].resize(screen_w, screen_h)
+        view.stage["player_list"][0].rescale()
+
+
+def get_map_point(map_point: Point, player_point: Point) -> Point:
+    _x, _y = map_point
+    _x_player, _y_player = player_point
+    screen_w, screen_h = get_window_size()
+    #   800         1024/2 = 512 ; example
+    if _x_player >= screen_w/2:
+        x = _x - screen_w/2
+    # -172 = 340 - 1024/2 ; example
+    else:
+        #   400     1024/2 = 512 ; example
+        # _x_player <= 512 ; example
+        x = _x
+        _x_player = 0
+    # 300 = 300 ; example
+
+    if _y_player >= screen_h/2:
+        y = _y - screen_h/2
+    else:
+        y = _y
+        _y_player = 0
+
+    return x + _x_player, y + _y_player
+
+
+class DefaultMenu(arcade.View):
+    def __init__(self, **kwargs):
+        super().__init__()
+        print(kwargs)
+        self.previous_window = kwargs["previous_menu"]
+        self.menu_name = kwargs["menu_name"]
+        self.manager = arcade.gui.UIManager()
+        self.manager.enable()
+        self.button_list = []
+        self.entered_settings = False
+        self.v_box = arcade.gui.UIBoxLayout()
+
+        set_bg_color(color=arcade.make_transparent_color(arcade.color.AMETHYST, 100))
+
+        self.manager.add(
+            arcade.gui.UIAnchorWidget(
+                anchor_x="center_x",
+                anchor_y="center_y",
+                child=self.v_box)
+        )
+
+    def create_button(self, text, width, padding):
+        button = arcade.gui.UIFlatButton(text=text, width=width)
+        self.button_list.append(button)
+        self.v_box.add(button.with_space_around(bottom=padding))
+
+    def create_buttons(self, buttons: List):
+        for b in buttons:
+            self.create_button(b, 200, 20)
+
+    def change_view(self, window):
+        self.manager.disable()
+        window.manager.enable()
+        self.window.show_view(window)
+
+    def back_button(self):
+        self.manager.disable()
+        try:
+            self.previous_window.manager.enable()
+        except AttributeError:
+            set_bg_color()
+        if self.entered_settings:
+            rescale(self.previous_window)
+        self.window.show_view(self.previous_window)
+
+    def on_key_press(self, key, _modifiers):
+        if key == arcade.key.ESCAPE:  # resume game
+            self.back_button()
+
+    @staticmethod
+    def get_value(button):
+        return button
+
+    @staticmethod
+    def quit_button():
+        arcade.exit()
+
+    def on_draw(self):
+        arcade.start_render()
+        self.manager.draw()
