@@ -9,9 +9,10 @@ from .func import get_window_size
 class GUI:
     def __init__(self):
         self.s_w, self.s_h = get_window_size()
+        self.debug = None
 
     def print_hud(self):
-        self._print_bottom_bar()
+        self._print_bottom_bar(self.debug)
         self._print_side_bar()
 
     def _get_char_stats(self):
@@ -96,7 +97,7 @@ class GUI:
                          self.s_w/2-40, 30, black, 9, 100)
         arcade.draw_line(100, 20, 100 + exp_line, 20, yellow)
 
-    def _print_bottom_bar(self):
+    def _print_bottom_bar(self, debug):
         transparent = False
 
         if 120 > self.center_y > 0:
@@ -115,24 +116,28 @@ class GUI:
         arcade.draw_rectangle_filled(self.s_w/2, 40, self.s_w-140, 40, main_color)
         arcade.draw_rectangle_filled(self.s_w/2, 40, self.s_w-160, 60, main_color)
         self.print_player_main_stats(transparent)
-        self._print_debug_info()
+        self._print_debug_info(debug)
 
     def _print_side_bar(self):
         self.print_char_stats(self.player_variables["is_show_stats"])
 
-    def _print_debug_info(self):
+    def _print_debug_info(self, debug):
         """
         Print some info, instead of score there might be different info
 
         :param score: Some input
         :return: No return
         """
-        arcade.draw_text(f"DEBUG:",
+        arcade.draw_text(f"DEBUG: {debug}",
                          100, 20, [255, 255, 0], 8, 20, 'left', bold=True)
         arcade.draw_text(f"Att: {self.player_variables['is_attacking']}",
                          200, 20, [255, 255, 0], 8, 20, 'left', bold=True)
         arcade.draw_text(f"Mov: {self.player_variables['is_moving']}",
                          300, 20, [255, 255, 0], 8, 20, 'left', bold=True)
+
+    def print_char_info_over_head(self):
+        arcade.draw_text(f"[{round(self.center_x)}, {round(self.center_y)}]", self.center_x-20, self.center_y+40,
+                         [0, 0, 0], 8, 100, 'left', bold=True, multiline=True)
 
     def print_items_info(self, item_list, show):
         if show:

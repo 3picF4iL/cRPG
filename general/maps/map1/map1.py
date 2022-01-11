@@ -16,19 +16,11 @@ class GameViewStart(arcade.View):
         checking_lockkey_states()  # Turn off LOCK's keys
         self.screen_w, self.screen_h = get_window_size()
         self.stage = stage_map1_opt
-        self.items_list = arcade.SpriteList()
-        self.item_selected = []
 
     def setup(self):
         map_name = map1_opt["map1_location"]
         layer_options = map1_opt["layer_options"]
-        for i in range(50):
-            sword = arcade.Sprite("graphic/items/sword.png", scale=0.17, hit_box_algorithm="Detailed")
-            from random import randint
-            sword.center_x = randint(200, 600)
-            sword.center_y = randint(200, 800)
-            sword.__setattr__("is_selected", False)
-            self.items_list.append(sword)
+
         self.stage["tile_map"] = arcade.load_tilemap(map_name, self.stage["map_opt"]["scale"],
                                                      layer_options)
         self.stage["scene"] = arcade.Scene.from_tilemap(self.stage["tile_map"])
@@ -49,22 +41,16 @@ class GameViewStart(arcade.View):
         arcade.start_render()
         self.stage["camera"].use()
         self.stage["scene"].draw()
-        self.items_list.draw()
-        for i in self.items_list:
-            if i.is_selected:
-                i.draw_hit_box(arcade.color.WHITE_SMOKE, 2)
-
+        self.stage["player_list"][0].print_char_info_over_head()
         self.stage["gui_camera"].use()
         self.stage["player_list"][0].print_hud()
 
     def on_mouse_press(self, x: float, y: float, button: int, modifiers: int):
         self.stage["player_list"][0].set_move(x, y)
-        for item in arcade.get_sprites_at_point([x, y], self.items_list):
-            if arcade.get_distance_between_sprites(self.stage["player_list"][0], item) < 90:
-                item.kill()
 
     def on_mouse_drag(self, x: float, y: float, dx: float, dy: float, _buttons: int, _modifiers: int):
         self.stage["player_list"][0].set_move(x, y)
+        self.stage["player_list"][0].debug = [x, y]
 
     def on_mouse_hover(self, x, y):
         if self.stage["player_list"][0].center_x >= self.screen_w/2:
@@ -81,7 +67,7 @@ class GameViewStart(arcade.View):
                 item.is_selected = False
 
     def on_mouse_motion(self, x: float, y: float, dx: float, dy: float):
-        self.on_mouse_hover(x, y)
+        self.stage["player_list"][0].debug = [x, y]
 
     def on_key_press(self, symbol: int, modifiers: int):
         if symbol == arcade.key.ESCAPE:

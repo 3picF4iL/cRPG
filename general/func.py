@@ -2,6 +2,7 @@ import os
 import re
 import arcade
 import arcade.gui
+from arcade.arcade_types import Point
 from win32api import GetKeyState, keybd_event
 from win32con import VK_CAPITAL, VK_NUMLOCK, VK_SCROLL, KEYEVENTF_KEYUP
 from typing import Tuple, Dict, Any, NoReturn, List
@@ -168,6 +169,30 @@ def rescale(view):
         view.stage["camera"].resize(screen_w, screen_h)
         view.stage["gui_camera"].resize(screen_w, screen_h)
         view.stage["player_list"][0].rescale()
+
+
+def get_map_point(map_point: Point, player_point: Point) -> Point:
+    _x, _y = map_point
+    _x_player, _y_player = player_point
+    screen_w, screen_h = get_window_size()
+    #   800         1024/2 = 512 ; example
+    if _x_player >= screen_w/2:
+        x = _x - screen_w/2
+    # -172 = 340 - 1024/2 ; example
+    else:
+        #   400     1024/2 = 512 ; example
+        # _x_player <= 512 ; example
+        x = _x
+        _x_player = 0
+    # 300 = 300 ; example
+
+    if _y_player >= screen_h/2:
+        y = _y - screen_h/2
+    else:
+        y = _y
+        _y_player = 0
+
+    return x + _x_player, y + _y_player
 
 
 class DefaultMenu(arcade.View):

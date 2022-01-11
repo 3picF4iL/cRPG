@@ -1,7 +1,7 @@
 import math
 import arcade
 from .const import player_map1_opt, warrior_stats
-from .func import load_texture_pair_mod
+from .func import load_texture_pair_mod, get_map_point
 from .gui import GUI
 
 
@@ -62,38 +62,26 @@ class PlayerCharacter(arcade.Sprite, GUI, CharacterStats):
             self.player_variables["is_attacking"] = True
 
     def set_move(self, dest_x, dest_y):
-        # self.s_w, self.s_h
-        screen_center_x = self.s_w / 2
-        screen_center_y = self.s_h / 2
-        if self.center_x >= screen_center_x:
-            x_change = dest_x - screen_center_x
-            self.player_variables["moving_dest_x"] = self.center_x + x_change
-        else:
-            self.player_variables["moving_dest_x"] = dest_x
-
-        if self.center_y >= screen_center_y:
-            y_change = dest_y - screen_center_y
-            self.player_variables["moving_dest_y"] = self.center_y + y_change
-        else:
-            self.player_variables["moving_dest_y"] = dest_y
-
+        _x, _y = get_map_point([dest_x, dest_y], [self.center_x, self.center_y])
+        self.player_variables["moving_dest_x"] = _x
+        self.player_variables["moving_dest_y"] = _y
         self.player_variables["is_moving"] = True
         self.face_dir_change(self.player_variables["moving_dest_x"] - self.center_x)
 
+    def _stop(self):
+        self.player_variables["is_moving"] = False
+        self.player_variables["moving_dest_x"] = None
+        self.player_variables["moving_dest_y"] = None
+        return True
+
     def moving(self, _x, _y, delta_time):
 
-        if self.player_variables["is_moving"] and \
-                self.player_variables["moving_dest_x"] and \
-                self.player_variables["moving_dest_y"]:
-
+        if self.player_variables["is_moving"] and _x and _y:
             goto_x, goto_y = _x, _y
             x_diff, y_diff = goto_x - self.center_x, goto_y - self.center_y
 
             if math.fabs(round(x_diff)) <= 1 and math.fabs(round(y_diff)) <= 1:
-                self.player_variables["is_moving"] = False
-                self.player_variables["moving_dest_x"] = None
-                self.player_variables["moving_dest_y"] = None
-                return True
+                self._stop()
 
             angle = math.atan2(y_diff, x_diff)
             self.center_x += math.cos(angle) * self.player_variables["movement_speed"] * delta_time
