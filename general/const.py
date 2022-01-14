@@ -83,68 +83,11 @@ stage_map1_opt = {
 
             # Other flags
             "on_path": True,        # changed from self.'path_walking', flag checking if the player is on the 'path'
-                                    # Should be moved to class player?
+                                    # Should be moved to char_class player?
             "debug_console": False  # Check if the debug console is enabled
 
         }
 
-##########################
-# Character initial settings
-##########################
-
-warrior_stats = {
-    "char_astats": {
-        "str": 20,
-        "dex": 15,
-        "vit": 20,
-        "ene": 40,
-        "max_hp": 100,
-        "max_mana": 20,
-        "actual_health_points": 100,
-        "actual_mana_points": 20,
-        "dmg_min": 1,
-        "dmg_max": 3
-        },
-    # Miscellaneous stat
-    "char_misc": {
-        "lvl": 1,
-        "mf": 20,  # Magic Find - 20%
-        "gf": 5,  # Gold Find - 20% - increase max and min value of gold drop for value
-        "gb": 0,   # Add X gold to min and max value
-        "exp": 0,
-        "diff": 1,  # 0, 1, 2 - 0 the lowest, 2 - the highest
-        "place": "None",
-        "dc": 100,
-        "mvm": 10,
-        "as": 5
-        },
-
-    # Char resistances
-    "char_resistances": {
-        "cr": 10,
-        "fr": 10,
-        "lr": 10,
-        "pr": 10
-        },
-
-    "char_texture": {
-        "graphic_location": "graphic/player/movement/",
-        "animation_last_state": 0,  # 0 - idle, 1 - moving, 2 - attacking
-        "animation_cur_state": 0,
-        "textures_walk_file": "walking_18.png",
-        "textures_walk_nr": 0,
-        "textures_walk": [],
-        "animation_walk_speed": 2,
-        "textures_attack_file": "attack_12.png",
-        "textures_attack_nr": 0,
-        "textures_attack": [],
-        "animation_attack_speed": 3,
-        "textures_idle_file": "idle_17.png",
-        "textures_idle_nr": 0,
-        "textures_idle": [],
-        "animation_idle_speed": 5
-    }
-}
 
 ##################
 # Other settings and variables
@@ -288,9 +231,56 @@ SHORTCUTS = {
     "dmg_min": "Min Damage",
     "dmg_max": "Max Damage",
     "mvm": "Movement speed",
-    "as": "Attack Speed"
+    "as": "Attack Speed",
+    "stamina": "Stamina"
 }
 
-DND = ["max_hp", "max_mana", "actual_health_points", "actual_mana_points"]
+DND = ["max_hp",
+       "max_mana",
+       "actual_health_points",
+       "actual_mana_points",
+       "actual_stamina_points",
+       "actual_health_points",
+       "actual_mana_points",
+       "actual_stamina_points",
+       "dmg_min",
+       "dmg_max",
+       "mf",  # Magic Find - 20%
+       "gf",  # Gold Find - 20% - increase max and min value of gold drop for value
+       "gb",  # Add X gold to min and max value
+       "exp",  # Experience
+       "diff",  # 0, 1, 2 - 0 the lowest, 2 - the highest
+       "place",  # Where char is actually
+       "dc",  # Drop Chance - if enemy killed = % chance to drop anything
+       "mvm",  # Movement speed
+       "as",  # Attack speed %
+       "lvl_hp",  # HP increasing when lvl up
+       "lvl_mana",  # Mana increasing when lvl up
+       "lvl_stam",  # Stamina increasing when lvl up
+       "add_str",  # Strength value when changing
+       "add_dex",  # Dexterity value when changing
+       "add_vit",  # HP increasing when changing
+       "add_ene",  # Mana increasing when lvl up
+       "stamina",
+       "lvl"
+       ]
 
+PARSE_VARIABLE_VALIDATION = {
+    1-17: int(),
+    19: int(),
+    21 - 22: int(),
+    30 - 33: int(),
+    35: int(),
+    37: int(),
+    39: int(),
+    0: [0, 9],
+    18: [0, 2],
+    20: [0, 100],
+    23-27: float(),
+    29: float(),
+    28: "x>11",
+    34: "string",
+    36: "string",
+    38: "string"
+}
 

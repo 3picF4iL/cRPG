@@ -76,16 +76,17 @@ def set_window_with_size(size: int = 1, *args) -> Any:
     window.set_size(screen_w, screen_h)
 
 
-def set_player(player, p_list: list, scene: Any) -> NoReturn:
+def set_player(char_class: int, player, p_list: list, scene: Any) -> NoReturn:
     """
     Creating and inserting player object into player list (for future drawing)
 
-    :param player: Player class
+    :param char_class: string with Char class name e.g. 0, mage, hunter etc.
+    :param player: Player char_class
     :param scene: Actual scene
     :param p_list: Player list
     """
 
-    player_ = player()
+    player_ = player(char_class)
     scene.add_sprite(LAYER_NAME_PLAYER, player_)
     p_list.append(player_)
 
