@@ -88,6 +88,35 @@ stage_map1_opt = {
 
         }
 
+ENEMY_1 = {
+    "enemy_id": 0,
+    "max_hp": 100,
+    "max_mana": 10,
+    "actual_health_points": 100,
+    "actual_mana_points": 10,
+    "mvm": 100,
+    "as": 10,
+    "dmg_min": 1,
+    "dmg_max": 3,
+    "def": 2,
+    "lvl": 1,
+    "exp": 300,
+    "diff": 0,
+    "cr": 10,
+    "fr": 10,
+    "lr": 10,
+    "pr": 10,
+    "is_attacking": False,
+    "is_walking": False,
+    "player_in_radius": False,
+    "direction_change_x": True,
+    "direction_change_y": True,
+    "is_patrol": False,
+    "is_hit": False,
+    "is_killed": False,
+
+}
+
 
 ##################
 # Other settings and variables
@@ -262,25 +291,22 @@ DND = ["max_hp",
        "add_vit",  # HP increasing when changing
        "add_ene",  # Mana increasing when lvl up
        "stamina",
-       "lvl"
+       "lvl",
+       "textures_walk_file",
+       "animation_walk_speed",
+       "textures_attack_file",
+       "animation_attack_speed",
+       "textures_idle_file",
+       "animation_idle_speed",
+       # Char textures variables that will be set during initialization
+       "graphic_location",
+       "animation_last_state",
+       "animation_cur_state",
+       "textures_walk_nr",
+       "textures_attack_nr",
+       "textures_idle_nr",
+       "textures_walk",
+       "textures_attack",
+       "textures_idle"
        ]
-
-PARSE_VARIABLE_VALIDATION = {
-    1-17: int(),
-    19: int(),
-    21 - 22: int(),
-    30 - 33: int(),
-    35: int(),
-    37: int(),
-    39: int(),
-    0: [0, 9],
-    18: [0, 2],
-    20: [0, 100],
-    23-27: float(),
-    29: float(),
-    28: "x>11",
-    34: "string",
-    36: "string",
-    38: "string"
-}
 

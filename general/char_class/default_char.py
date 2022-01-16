@@ -76,12 +76,6 @@ class CharClass:
         }
 
         self.char_stats = self.stats["char_stats"]
-
-        # # Char resistances
-        # self.char_resistances = self.stats["char_resistances"]
-        #
-        # # Char texture, animation settings
-        # self.player_texture = self.stats["char_texture"]
         self.load_char_stats()
 
         """
@@ -140,7 +134,8 @@ class CharClass:
 
         _stats = list(self.char_stats.keys())
         print(_stats)
-        for j, value, stat in enumerate(zip(values[j], _stats)):
+        print(values)
+        for j, (value, stat) in enumerate(zip(values, _stats)):
             if value is None or stat is None:
                 break
             import re

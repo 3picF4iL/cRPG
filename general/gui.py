@@ -17,12 +17,10 @@ class GUI:
 
     def _get_char_stats(self):
         stats = ""
-        for stat in [self.char_stats, self.char_resistances]:
-            for attribute, value in stat.items():
-                value_ = value
-                if attribute not in DND:
-                    stats += f"{SHORTCUTS[attribute]}: {value_}\n"
-            stats += "\n"
+        for stat in self.char_stats:
+            value_ = self.char_stats[stat]
+            if stat not in DND:
+                stats += f"{SHORTCUTS[stat]}: {value_}\n"
         return stats
 
     def print_char_stats(self, show_stats):

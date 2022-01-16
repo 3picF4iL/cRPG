@@ -3,50 +3,15 @@ import math
 from random import randint
 import arcade
 from enemies.enemies_variables import ENEMY1_STAT
-from const import LEFT_FACING, RIGHT_FACING, SPRITE_SCALING_PLAYER
+from general.const import ENEMY_1, LEFT_FACING, RIGHT_FACING, SPRITE_SCALING_PLAYER
 from items import Item, generate_item
 
 
-class Enemy1(arcade.Sprite):
+class Enemy(arcade.Sprite):
     def __init__(self, player, items):
         super().__init__()
 
-        self.max_hp = ENEMY1_STAT["max_hp"]
-        self.max_mana = ENEMY1_STAT["max_mana"]
-        self.actual_health_points = ENEMY1_STAT["max_hp"]
-        self.actual_mana_points = ENEMY1_STAT["max_mana"]
-        self.movement_speed = ENEMY1_STAT["movement_speed"]
-        self.attack_speed = ENEMY1_STAT["attack_speed"]
-
-        self.enemy_general = {
-            "dmg_min": 1,
-            "dmg_max": 3,
-            "def": 2
-        }
-
-        # Miscellaneous stat
-        self.enemy_misc = {
-            "lvl": 1,
-            "exp": 300,
-            "diff": 1,  # 0, 1, 2 - 0 the lowest, 2 - the highest
-            }
-
-        # Char resistances
-        self.enemy_resistances = {
-            "cr": 10,
-            "fr": 10,
-            "lr": 10,
-            "pr": 10
-            }
-
-        self.is_attacking = False
-        self.is_walking = False
-        self.player_in_radius = False
-        self.direction_change_x = True
-        self.direction_change_y = True
-        self.is_patrol = False
-        self.is_hit = False
-        self.is_killed = False
+        self.stats = ENEMY_1
         self.print_damage = False
         enemy_texture_path = "./graphic/animations/enemies/monster_1"
         self.character_face_direction = randint(0, 1)
