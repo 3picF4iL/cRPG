@@ -1,4 +1,5 @@
 import arcade
+from random import randint
 
 ##################
 # SCREEN SETTINGS
@@ -26,20 +27,21 @@ LAYER_NAME_PATH = "Path"
 LAYER_NAME_PLAYER = "Player"
 LAYER_NAME_ENEMIES = "Enemies"
 LAYER_NAME_MEADOW = "Meadow"
+LAYER_NAME_ENTITIES = "Entities"
 
 map1_opt = {
     "map1_location": "general/maps/map1/map1.json",
     "scale": 0.6,
     "layer_options": {
-            LAYER_NAME_WALLS: {
-                "use_spatial_hash": True,
-            },
-            LAYER_NAME_PATH: {
-                "use_spatial_hash": True,
-            },
-            LAYER_NAME_MEADOW: {
-                "use_spatial_hash": True,
-            },
+        LAYER_NAME_WALLS: {
+            "use_spatial_hash": True,
+        },
+        LAYER_NAME_PATH: {
+            "use_spatial_hash": True,
+        },
+        LAYER_NAME_MEADOW: {
+            "use_spatial_hash": True,
+        },
     }
 }
 
@@ -62,61 +64,139 @@ player_map1_opt = {
 }
 
 stage_map1_opt = {
-            # Elements lists appearing on the maps
-            "player_list": arcade.SpriteList(),        # List of the players on the maps
-            "enemy_list": arcade.SpriteList(),         # List of the enemies on the maps
-            "item_on_floor_list": arcade.SpriteList(),     # List of the items on the maps
+    # Elements lists appearing on the maps
+    "player_list": arcade.SpriteList(visible=False),  # List of the players on the maps
+    "enemy_list": arcade.SpriteList(visible=False),  # List of the enemies on the maps
+    "item_on_floor_list": arcade.SpriteList(),  # List of the items on the maps
+    "entities_list": arcade.SpriteList(),
 
-            # Elements that need to be placed in the code
-            "debugger": None,           # For the debug console
-            "tile_map": None,           # Loading maps from file
-            "scene": None,              # Creating first scene
-            "physics_engine": None,     # Physic engine
-            "camera": None,             # Camera instance
-            "gui": None,                # GUI instance
-            "gui_camera": None,         # Camera GUI instance
-            "map_opt": map1_opt,
+    # Elements that need to be placed in the code
+    "debugger": None,  # For the debug console
+    "tile_map": None,  # Loading maps from file
+    "scene": None,  # Creating first scene
+    "physics_engine": None,  # Physic engine
+    "camera": None,  # Camera instance
+    "gui": None,  # GUI instance
+    "gui_camera": None,  # Camera GUI instance
+    "map_opt": map1_opt,
 
-            # Flag Information appearing on the maps
-            "show_char_stat": False,            # Show character stats on the right side of the screen
-            "show_floor_item_stats": False,     # Show items name that lies on the floor
+    # Flag Information appearing on the maps
+    "show_char_stat": False,  # Show character stats on the right side of the screen
+    "show_floor_item_stats": False,  # Show items name that lies on the floor
 
-            # Other flags
-            "on_path": True,        # changed from self.'path_walking', flag checking if the player is on the 'path'
-                                    # Should be moved to char_class player?
-            "debug_console": False  # Check if the debug console is enabled
-
-        }
-
-ENEMY_1 = {
-    "enemy_id": 0,
-    "max_hp": 100,
-    "max_mana": 10,
-    "actual_health_points": 100,
-    "actual_mana_points": 10,
-    "mvm": 100,
-    "as": 10,
-    "dmg_min": 1,
-    "dmg_max": 3,
-    "def": 2,
-    "lvl": 1,
-    "exp": 300,
-    "diff": 0,
-    "cr": 10,
-    "fr": 10,
-    "lr": 10,
-    "pr": 10,
-    "is_attacking": False,
-    "is_walking": False,
-    "player_in_radius": False,
-    "direction_change_x": True,
-    "direction_change_y": True,
-    "is_patrol": False,
-    "is_hit": False,
-    "is_killed": False,
+    # Other flags
+    "on_path": True,  # changed from self.'path_walking', flag checking if the player is on the 'path'
+    # Should be moved to char_class player?
+    "debug_console": False,  # Check if the debug console is enabled
+    # "enemy_file_conf": "general/enemy/enemy_settings"
+    "enemies_on_map": lambda filename="general/enemy/enemy_settings": [(f.read(), f.close()) for f in [open(filename)]][0][0]
 
 }
 
+ENEMY_STATS = {
+    0: {
+        "enemy_id": 0,
+        "scale": 0.2,
+        "initial_x": None,
+        "initial_y": None,
+        "max_hp": 100,
+        "max_mana": 10,
+        "actual_health_points": 100,
+        "actual_mana_points": 10,
+        "mvm": 80,
+        "as": 10,
+        "dmg_min": 1,
+        "dmg_max": 3,
+        "def": 2,
+        "lvl": 1,
+        "exp": 300,
+        "diff": 0,
+        "cr": 10,
+        "fr": 10,
+        "lr": 10,
+        "pr": 10,
+        "radius": 200,
+        "is_attacking": False,
+        "is_walking": False,
+        "is_moving": False,
+        "player_in_radius": False,
+        "direction_change_x": True,
+        "direction_change_y": True,
+        "is_patrol": False,
+        "is_hit": False,
+        "is_killed": False,
+        "dest_x": None,
+        "dest_y": None,
+        "face_direction": randint(0, 1),
+        "attack_frame": 8,
+        "textures_walk": [],
+        "textures_walk_nr": "",
+        "textures_walk_file": "walking_18.png",
+        "animation_walk_speed": 3,
+        "textures_idle": [],
+        "textures_idle_nr": "",
+        "textures_idle_file": "idle_17.png",
+        "textures_attack": [],
+        "textures_attack_nr": "",
+        "textures_attack_file": "attack_12.png",
+        "animation_attack_speed": 4,
+        "animation_idle_speed": 5,
+        "animation_last_state": 0,
+        "animation_cur_state": 0,
+        "graphic_location": f"graphic/enemy/0/movement/",
+    },
+    1: {
+        "enemy_id": 1,
+        "scale": 0.2,
+        "initial_x": None,
+        "initial_y": None,
+        "max_hp": 100,
+        "max_mana": 10,
+        "actual_health_points": 100,
+        "actual_mana_points": 10,
+        "mvm": 40,
+        "as": 10,
+        "dmg_min": 1,
+        "dmg_max": 3,
+        "def": 2,
+        "lvl": 1,
+        "exp": 300,
+        "diff": 0,
+        "cr": 10,
+        "fr": 10,
+        "lr": 10,
+        "pr": 10,
+        "radius": 200,
+        "is_attacking": False,
+        "is_walking": False,
+        "is_moving": False,
+        "player_in_radius": False,
+        "direction_change_x": True,
+        "direction_change_y": True,
+        "dest_x": None,
+        "dest_y": None,
+        "is_patrol": False,
+        "is_hit": False,
+        "is_killed": False,
+        "face_direction": randint(0, 1),
+        "attack_frame": 8,
+        "textures_walk": [],
+        "textures_walk_nr": "",
+        "textures_walk_file": "walking_18.png",
+        "animation_walk_speed": 3,
+        "textures_idle": [],
+        "textures_idle_nr": "",
+        "textures_idle_file": "idle_17.png",
+        "textures_attack": [],
+        "textures_attack_nr": "",
+        "textures_attack_file": "attack_12.png",
+        "animation_attack_speed": 4,
+        "animation_idle_speed": 5,
+        "animation_last_state": 0,
+        "animation_cur_state": 0,
+        "graphic_location": f"graphic/enemy/1/movement/",
+    },
+}
 
 ##################
 # Other settings and variables
@@ -309,4 +389,3 @@ DND = ["max_hp",
        "textures_attack",
        "textures_idle"
        ]
-

@@ -123,7 +123,6 @@ class GUI:
         """
         Print some info, instead of score there might be different info
 
-        :param score: Some input
         :return: No return
         """
         arcade.draw_text(f"DEBUG: {debug}",

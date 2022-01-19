@@ -48,6 +48,7 @@ class CharClass:
                 "add_dex": 0,    # Dexterity value when changing
                 "add_vit": 0,    # HP increasing when changing
                 "add_ene": 0,     # Mana increasing when lvl up
+
                 # Char resistances
                 "cr": 0,  # Cold res
                 "fr": 0,  # Fire res
@@ -61,17 +62,23 @@ class CharClass:
                 "animation_attack_speed": 1,
                 "textures_idle_file": "idle_17.png",
                 "animation_idle_speed": 1,
+                "textures_hurt_file": "hurt_12.png",
+                "animation_hurt_speed": 2,
 
                 # Char textures variables that will be set during initialization
                 "graphic_location": f"graphic/player/{self._class}/movement/",
-                "animation_last_state": 0,  # 0 - idle, 1 - moving, 2 - attacking
+                "animation_last_state": 0,  # 0 - idle, 1 - moving, 2 - attacking, 3 - hurt
                 "animation_cur_state": 0,
                 "textures_walk_nr": 0,
                 "textures_attack_nr": 0,
                 "textures_idle_nr": 0,
+                "textures_hurt_nr": 12,
                 "textures_walk": [],
                 "textures_attack": [],
                 "textures_idle": [],
+                "textures_hurt": [],
+
+                "is_hit": False
                 }
         }
 
@@ -133,8 +140,6 @@ class CharClass:
         values.pop(0)
 
         _stats = list(self.char_stats.keys())
-        print(_stats)
-        print(values)
         for j, (value, stat) in enumerate(zip(values, _stats)):
             if value is None or stat is None:
                 break
@@ -146,12 +151,9 @@ class CharClass:
             self.verify_value(pos=j+1, value=value)
             self.set_attribute(attr=stat, value=value)
 
-        print(self.char_stats)
-
     @staticmethod
     def verify_value(pos, value):
         type_value = type(value)
-        print(type_value)
         if pos in range(1, 18) or pos == 19 or pos in range(21, 23) or pos in range(30, 34) or pos in [35, 37, 39]:
             if not isinstance(value, int):
                 raise ValueError(f"Expected int on position {pos} got {type_value}, {value}")

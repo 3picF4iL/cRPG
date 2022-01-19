@@ -2,9 +2,6 @@ import os
 import math
 from random import randint
 import arcade
-from enemies.enemies_variables import ENEMY1_STAT
-from general.const import ENEMY_1, LEFT_FACING, RIGHT_FACING, SPRITE_SCALING_PLAYER
-from items import Item, generate_item
 
 
 class Enemy(arcade.Sprite):
