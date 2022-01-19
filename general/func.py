@@ -2,11 +2,12 @@ import os
 import re
 import arcade
 import arcade.gui
+import random
 from arcade.arcade_types import Point
 from win32api import GetKeyState, keybd_event
 from win32con import VK_CAPITAL, VK_NUMLOCK, VK_SCROLL, KEYEVENTF_KEYUP
 from typing import Tuple, Dict, Any, NoReturn, List
-from .const import SCREEN_SIZE, TITLE, LAYER_NAME_PLAYER, LAYER_NAME_ENEMIES, BG_COLOR
+from .const import SCREEN_SIZE, TITLE, LAYER_NAME_PLAYER, LAYER_NAME_ENTITIES, LAYER_NAME_ENEMIES, BG_COLOR
 
 
 def get_key_from_value(dictionary: Dict, value) -> Any:  # Return key or keys from value
@@ -76,18 +77,53 @@ def set_window_with_size(size: int = 1, *args) -> Any:
     window.set_size(screen_w, screen_h)
 
 
-def set_player(player, p_list: list, scene: Any) -> NoReturn:
+def set_sprites_in_spritelist(sprite_list):
+    sprite_list.sort(key=lambda x: x.position[1], reverse=True)
+
+
+def set_player(char_class: int, player, scene: Any) -> NoReturn:
     """
     Creating and inserting player object into player list (for future drawing)
 
-    :param player: Player class
+    :param char_class: string with Char class name e.g. 0, mage, hunter etc.
+    :param player: Player char_class
     :param scene: Actual scene
     :param p_list: Player list
     """
 
-    player_ = player()
-    scene.add_sprite(LAYER_NAME_PLAYER, player_)
-    p_list.append(player_)
+    player_ = player(char_class)
+    scene.add_sprite(LAYER_NAME_PLAYER, player_, visible=False)
+    scene.add_sprite(LAYER_NAME_ENTITIES, player_)
+
+
+def set_enemies(filename: Any, enemy, scene: Any, player: Any) -> NoReturn:
+    """
+    Load file with enemy type, coords and stats. Set each enemy in requested place
+
+    :param filename: string with path to filename contains placement of every enemy, stat and behavior on each map
+    :param enemy: put every created enemy on that list
+    :param scene: add enemy to scene to keep it for distance counting, collision etc.
+    """
+    enemies = filename()
+    """
+    ID(0) AMOUNT(1)   RADIUS(2)     X(3)    Y(4)  Dest_X(5)   Dest_Y(6)  
+    0       3           100         500     100     280         350
+    """
+    for _, line in enumerate(enemies.splitlines()):
+        line = line.split()
+        for i in range(1, int(line[1])+1):
+            enemy_ = enemy(int(line[0]), player)
+            enemy_.personal_id = _
+            enemy_.center_x = random.randint(int(line[3]), int(line[3]) + int(line[2]))
+            enemy_.center_y = random.randint(int(line[4]), int(line[4]) + int(line[2]))
+            enemy_.enemy_stats["initial_x"] = enemy_.center_x
+            enemy_.enemy_stats["initial_y"] = enemy_.center_y
+            #enemy_.enemy_stats["dest_x"] = int(line[5])
+            #enemy_.enemy_stats["dest_y"] = int(line[6])
+
+            # Adding enemy to entity group and enemy group
+            scene.add_sprite(LAYER_NAME_ENEMIES, enemy_, visible=False)
+            scene.add_sprite(LAYER_NAME_ENTITIES, enemy_)
 
 
 def get_window_size() -> Tuple:
@@ -113,6 +149,27 @@ def set_bg_color(color: Tuple = BG_COLOR) -> None:
     :return: None
     """
     return arcade.set_background_color(color)
+
+
+def check_the_battle(enemy_list, player):
+    for enemy in enemy_list:
+        dist = arcade.get_distance_between_sprites(player, enemy)
+        if dist < 150:
+            enemy.enemy_stats["player_in_radius"] = True
+            # if arcade.get_distance_between_sprites(player, enemy) <= 50 and player.is_attacking:
+            #     if enemy.get_hit(player.damage):
+            #         add_exp(player, enemy)
+            #
+            # if arcade.get_distance_between_sprites(player, enemy) <= 50 and enemy.is_attacking:
+            #     player.get_hit(enemy.damage)
+            #
+            # if not player.is_attacking:
+            #     enemy.is_hit = False
+            #
+            # if not enemy.is_attacking:
+            #     player.is_hit = False
+        else:
+            enemy.enemy_stats["player_in_radius"] = False
 
 
 def load_texture_pair_mod(filename, width, y, height, hit_box_algorithm: str = "Simple"):
@@ -144,6 +201,25 @@ def load_texture_pair_mod(filename, width, y, height, hit_box_algorithm: str = "
     return textures_list, amount
 
 
+def _highlight_enemy(mouse_x, mouse_y, enemy_list):
+    for enemy in arcade.get_sprites_at_point([mouse_x, mouse_y], enemy_list):
+        enemy.draw_hit_box()
+
+
+def _highlight_item(mouse_x, mouse_y, item_list):
+    for item in arcade.get_sprites_at_point([mouse_x, mouse_y], item_list):
+        item.draw_hit_box()
+
+
+def highlight_object(mouse_x, mouse_y, player, item_list, enemy_list):
+    x, y = get_map_point([mouse_x, mouse_y],
+                         [player.center_x, player.center_y]
+                         )
+    if item_list:
+        _highlight_item(x, y, item_list)
+    _highlight_enemy(x, y, enemy_list)
+
+
 def center_camera_to_player(camera, player_x, player_y):
     """
     Move camera to player
@@ -170,6 +246,29 @@ def rescale(view):
         view.stage["gui_camera"].resize(screen_w, screen_h)
         view.stage["player_list"][0].rescale()
 
+
+def get_map_point2(map_point: Point, player_point: Point) -> Point:
+    _x, _y = map_point
+    _x_player, _y_player = player_point
+    screen_w, screen_h = get_window_size()
+    #   800         1024/2 = 512 ; example
+    if _x_player >= screen_w/2:
+        x = _x - screen_w/2
+    # -172 = 340 - 1024/2 ; example
+    else:
+        #   400     1024/2 = 512 ; example
+        # _x_player <= 512 ; example
+        x = _x
+        _x_player = 0
+    # 300 = 300 ; example
+
+    if _y_player >= screen_h/2:
+        y = _y - screen_h/2
+    else:
+        y = _y
+        _y_player = 0
+
+    return x + _x_player, y + _y_player
 
 def get_map_point(map_point: Point, player_point: Point) -> Point:
     _x, _y = map_point

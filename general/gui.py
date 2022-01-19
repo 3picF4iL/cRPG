@@ -17,12 +17,10 @@ class GUI:
 
     def _get_char_stats(self):
         stats = ""
-        for stat in [self.char_astats, self.char_misc, self.char_resistances]:
-            for attribute, value in stat.items():
-                value_ = value
-                if not attribute in DND:
-                    stats += f"{SHORTCUTS[attribute]}: {value_}\n"
-            stats += "\n"
+        for stat in self.char_stats:
+            value_ = self.char_stats[stat]
+            if stat not in DND:
+                stats += f"{SHORTCUTS[stat]}: {value_}\n"
         return stats
 
     def print_char_stats(self, show_stats):
@@ -54,9 +52,9 @@ class GUI:
         # ==========
         # HEALTH
         # ==========
-        arcade.draw_text(f"Health: {self.char_astats['actual_health_points']}/{self.char_astats['max_hp']}", 100, 50, black, 9, 5)
+        arcade.draw_text(f"Health: {self.char_stats['actual_health_points']}/{self.char_stats['max_hp']}", 100, 50, black, 9, 5)
 
-        health_bar_percent = self.char_astats['actual_health_points']/self.char_astats['max_hp']
+        health_bar_percent = self.char_stats['actual_health_points']/self.char_stats['max_hp']
         if health_bar_percent < 1:
             health_bar_posx = 200 - (200 - 200 * health_bar_percent) / 2
             health_bar_width = 200 - (200 - 200 * health_bar_percent)
@@ -72,10 +70,10 @@ class GUI:
         # ==========
         # MANA
         # ==========
-        arcade.draw_text(f"Mana: {self.char_astats['actual_mana_points']}/{self.char_astats['max_mana']}",
+        arcade.draw_text(f"Mana: {self.char_stats['actual_mana_points']}/{self.char_stats['max_mana']}",
                          self.s_w - 300, 50, black, 9, 5)
 
-        mana_bar_percent = self.char_astats['actual_mana_points']/self.char_astats['max_mana']
+        mana_bar_percent = self.char_stats['actual_mana_points']/self.char_stats['max_mana']
         if mana_bar_percent < 1:
             mana_bar_posx = self.s_w - (200 - 200 * mana_bar_percent) / 2
             mana_bar_width = 200 - (200 - 200 * mana_bar_percent)
@@ -92,8 +90,8 @@ class GUI:
         # ==========
         # EXP
         # ==========
-        exp_line = (self.s_w - 190) * self.char_misc['exp'] / NEXT_LEVEL_EXP[self.char_misc['lvl']+1]
-        arcade.draw_text(f"Lvl: {self.char_misc['lvl']} | EXP: {self.char_misc['exp']}",
+        exp_line = (self.s_w - 190) * self.char_stats['exp'] / NEXT_LEVEL_EXP[self.char_stats['lvl']+1]
+        arcade.draw_text(f"Lvl: {self.char_stats['lvl']} | EXP: {self.char_stats['exp']}",
                          self.s_w/2-40, 30, black, 9, 100)
         arcade.draw_line(100, 20, 100 + exp_line, 20, yellow)
 
@@ -125,7 +123,6 @@ class GUI:
         """
         Print some info, instead of score there might be different info
 
-        :param score: Some input
         :return: No return
         """
         arcade.draw_text(f"DEBUG: {debug}",

@@ -1,4 +1,5 @@
 import arcade
+from random import randint
 
 ##################
 # SCREEN SETTINGS
@@ -26,20 +27,21 @@ LAYER_NAME_PATH = "Path"
 LAYER_NAME_PLAYER = "Player"
 LAYER_NAME_ENEMIES = "Enemies"
 LAYER_NAME_MEADOW = "Meadow"
+LAYER_NAME_ENTITIES = "Entities"
 
 map1_opt = {
     "map1_location": "general/maps/map1/map1.json",
     "scale": 0.6,
     "layer_options": {
-            LAYER_NAME_WALLS: {
-                "use_spatial_hash": True,
-            },
-            LAYER_NAME_PATH: {
-                "use_spatial_hash": True,
-            },
-            LAYER_NAME_MEADOW: {
-                "use_spatial_hash": True,
-            },
+        LAYER_NAME_WALLS: {
+            "use_spatial_hash": True,
+        },
+        LAYER_NAME_PATH: {
+            "use_spatial_hash": True,
+        },
+        LAYER_NAME_MEADOW: {
+            "use_spatial_hash": True,
+        },
     }
 }
 
@@ -62,88 +64,138 @@ player_map1_opt = {
 }
 
 stage_map1_opt = {
-            # Elements lists appearing on the maps
-            "player_list": arcade.SpriteList(),        # List of the players on the maps
-            "enemy_list": arcade.SpriteList(),         # List of the enemies on the maps
-            "item_on_floor_list": arcade.SpriteList(),     # List of the items on the maps
+    # Elements lists appearing on the maps
+    "player_list": arcade.SpriteList(visible=False),  # List of the players on the maps
+    "enemy_list": arcade.SpriteList(visible=False),  # List of the enemies on the maps
+    "item_on_floor_list": arcade.SpriteList(),  # List of the items on the maps
+    "entities_list": arcade.SpriteList(),
 
-            # Elements that need to be placed in the code
-            "debugger": None,           # For the debug console
-            "tile_map": None,           # Loading maps from file
-            "scene": None,              # Creating first scene
-            "physics_engine": None,     # Physic engine
-            "camera": None,             # Camera instance
-            "gui": None,                # GUI instance
-            "gui_camera": None,         # Camera GUI instance
-            "map_opt": map1_opt,
+    # Elements that need to be placed in the code
+    "debugger": None,  # For the debug console
+    "tile_map": None,  # Loading maps from file
+    "scene": None,  # Creating first scene
+    "physics_engine": None,  # Physic engine
+    "camera": None,  # Camera instance
+    "gui": None,  # GUI instance
+    "gui_camera": None,  # Camera GUI instance
+    "map_opt": map1_opt,
 
-            # Flag Information appearing on the maps
-            "show_char_stat": False,            # Show character stats on the right side of the screen
-            "show_floor_item_stats": False,     # Show items name that lies on the floor
+    # Flag Information appearing on the maps
+    "show_char_stat": False,  # Show character stats on the right side of the screen
+    "show_floor_item_stats": False,  # Show items name that lies on the floor
 
-            # Other flags
-            "on_path": True,        # changed from self.'path_walking', flag checking if the player is on the 'path'
-                                    # Should be moved to class player?
-            "debug_console": False  # Check if the debug console is enabled
+    # Other flags
+    "on_path": True,  # changed from self.'path_walking', flag checking if the player is on the 'path'
+    # Should be moved to char_class player?
+    "debug_console": False,  # Check if the debug console is enabled
+    # "enemy_file_conf": "general/enemy/enemy_settings"
+    "enemies_on_map": lambda filename="general/enemy/enemy_settings": [(f.read(), f.close()) for f in [open(filename)]][0][0]
 
-        }
+}
 
-##########################
-# Character initial settings
-##########################
-
-warrior_stats = {
-    "char_astats": {
-        "str": 20,
-        "dex": 15,
-        "vit": 20,
-        "ene": 40,
+ENEMY_STATS = {
+    0: {
+        "enemy_id": 0,
+        "scale": 0.2,
+        "initial_x": None,
+        "initial_y": None,
         "max_hp": 100,
-        "max_mana": 20,
+        "max_mana": 10,
         "actual_health_points": 100,
-        "actual_mana_points": 20,
+        "actual_mana_points": 10,
+        "mvm": 80,
+        "as": 10,
         "dmg_min": 1,
-        "dmg_max": 3
-        },
-    # Miscellaneous stat
-    "char_misc": {
+        "dmg_max": 3,
+        "def": 2,
         "lvl": 1,
-        "mf": 20,  # Magic Find - 20%
-        "gf": 5,  # Gold Find - 20% - increase max and min value of gold drop for value
-        "gb": 0,   # Add X gold to min and max value
-        "exp": 0,
-        "diff": 1,  # 0, 1, 2 - 0 the lowest, 2 - the highest
-        "place": "None",
-        "dc": 100,
-        "mvm": 10,
-        "as": 5
-        },
-
-    # Char resistances
-    "char_resistances": {
+        "exp": 300,
+        "diff": 0,
         "cr": 10,
         "fr": 10,
         "lr": 10,
-        "pr": 10
-        },
-
-    "char_texture": {
-        "graphic_location": "graphic/player/movement/",
-        "animation_last_state": 0,  # 0 - idle, 1 - moving, 2 - attacking
-        "animation_cur_state": 0,
-        "textures_walk_file": "walking_18.png",
-        "textures_walk_nr": 0,
+        "pr": 10,
+        "radius": 200,
+        "is_attacking": False,
+        "is_walking": False,
+        "is_moving": False,
+        "player_in_radius": False,
+        "direction_change_x": True,
+        "direction_change_y": True,
+        "is_patrol": False,
+        "is_hit": False,
+        "is_killed": False,
+        "dest_x": None,
+        "dest_y": None,
+        "face_direction": randint(0, 1),
+        "attack_frame": 8,
         "textures_walk": [],
-        "animation_walk_speed": 2,
-        "textures_attack_file": "attack_12.png",
-        "textures_attack_nr": 0,
-        "textures_attack": [],
-        "animation_attack_speed": 3,
-        "textures_idle_file": "idle_17.png",
-        "textures_idle_nr": 0,
+        "textures_walk_nr": "",
+        "textures_walk_file": "walking_18.png",
+        "animation_walk_speed": 3,
         "textures_idle": [],
-        "animation_idle_speed": 5
-    }
+        "textures_idle_nr": "",
+        "textures_idle_file": "idle_17.png",
+        "textures_attack": [],
+        "textures_attack_nr": "",
+        "textures_attack_file": "attack_12.png",
+        "animation_attack_speed": 4,
+        "animation_idle_speed": 5,
+        "animation_last_state": 0,
+        "animation_cur_state": 0,
+        "graphic_location": f"graphic/enemy/0/movement/",
+    },
+    1: {
+        "enemy_id": 1,
+        "scale": 0.2,
+        "initial_x": None,
+        "initial_y": None,
+        "max_hp": 100,
+        "max_mana": 10,
+        "actual_health_points": 100,
+        "actual_mana_points": 10,
+        "mvm": 40,
+        "as": 10,
+        "dmg_min": 1,
+        "dmg_max": 3,
+        "def": 2,
+        "lvl": 1,
+        "exp": 300,
+        "diff": 0,
+        "cr": 10,
+        "fr": 10,
+        "lr": 10,
+        "pr": 10,
+        "radius": 200,
+        "is_attacking": False,
+        "is_walking": False,
+        "is_moving": False,
+        "player_in_radius": False,
+        "direction_change_x": True,
+        "direction_change_y": True,
+        "dest_x": None,
+        "dest_y": None,
+        "is_patrol": False,
+        "is_hit": False,
+        "is_killed": False,
+        "face_direction": randint(0, 1),
+        "attack_frame": 8,
+        "textures_walk": [],
+        "textures_walk_nr": "",
+        "textures_walk_file": "walking_18.png",
+        "animation_walk_speed": 3,
+        "textures_idle": [],
+        "textures_idle_nr": "",
+        "textures_idle_file": "idle_17.png",
+        "textures_attack": [],
+        "textures_attack_nr": "",
+        "textures_attack_file": "attack_12.png",
+        "animation_attack_speed": 4,
+        "animation_idle_speed": 5,
+        "animation_last_state": 0,
+        "animation_cur_state": 0,
+        "graphic_location": f"graphic/enemy/1/movement/",
+    },
 }
 
 ##################
@@ -288,9 +340,52 @@ SHORTCUTS = {
     "dmg_min": "Min Damage",
     "dmg_max": "Max Damage",
     "mvm": "Movement speed",
-    "as": "Attack Speed"
+    "as": "Attack Speed",
+    "stamina": "Stamina"
 }
 
-DND = ["max_hp", "max_mana", "actual_health_points", "actual_mana_points"]
-
-
+DND = ["max_hp",
+       "max_mana",
+       "actual_health_points",
+       "actual_mana_points",
+       "actual_stamina_points",
+       "actual_health_points",
+       "actual_mana_points",
+       "actual_stamina_points",
+       "dmg_min",
+       "dmg_max",
+       "mf",  # Magic Find - 20%
+       "gf",  # Gold Find - 20% - increase max and min value of gold drop for value
+       "gb",  # Add X gold to min and max value
+       "exp",  # Experience
+       "diff",  # 0, 1, 2 - 0 the lowest, 2 - the highest
+       "place",  # Where char is actually
+       "dc",  # Drop Chance - if enemy killed = % chance to drop anything
+       "mvm",  # Movement speed
+       "as",  # Attack speed %
+       "lvl_hp",  # HP increasing when lvl up
+       "lvl_mana",  # Mana increasing when lvl up
+       "lvl_stam",  # Stamina increasing when lvl up
+       "add_str",  # Strength value when changing
+       "add_dex",  # Dexterity value when changing
+       "add_vit",  # HP increasing when changing
+       "add_ene",  # Mana increasing when lvl up
+       "stamina",
+       "lvl",
+       "textures_walk_file",
+       "animation_walk_speed",
+       "textures_attack_file",
+       "animation_attack_speed",
+       "textures_idle_file",
+       "animation_idle_speed",
+       # Char textures variables that will be set during initialization
+       "graphic_location",
+       "animation_last_state",
+       "animation_cur_state",
+       "textures_walk_nr",
+       "textures_attack_nr",
+       "textures_idle_nr",
+       "textures_walk",
+       "textures_attack",
+       "textures_idle"
+       ]
