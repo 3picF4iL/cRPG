@@ -56,6 +56,7 @@ class Enemy(arcade.Sprite):
 
         self.hit_box = ([-100, -200], [-100, 0], [100, 0], [100, -200])
 
+
     @property
     def damage(self):
         damage = randint(self.enemy_general["dmg_min"], self.enemy_general["dmg_max"])

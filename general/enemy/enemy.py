@@ -1,7 +1,7 @@
 import arcade
 import math
 import random
-from general.func import load_texture_pair_mod
+from general.func import load_texture_pair_mod, add_exp
 from general.const import ENEMY_STATS
 
 
@@ -13,27 +13,21 @@ def load_enemy_stats(enemy_class):
 class Enemy(arcade.Sprite):
     def __init__(self, enemy_class, player):
         super().__init__()
-        #self.additional_settings = {}
         self.personal_id = None
         self.enemy_stats = load_enemy_stats(enemy_class)
         self.player = player
         self.scale = self.enemy_stats["scale"]
         self.cur_texture_index = self.enemy_stats["animation_cur_state"]
 
-        self.enemy_stats["textures_walk"], self.enemy_stats["textures_walk_nr"] = \
-            load_texture_pair_mod(self.enemy_stats["graphic_location"] + self.enemy_stats["textures_walk_file"],
-                                  720, 0, 490)
-
-        self.enemy_stats["textures_idle"], self.enemy_stats["textures_idle_nr"] = \
-            load_texture_pair_mod(self.enemy_stats["graphic_location"] + self.enemy_stats["textures_idle_file"],
-                                  720, 0, 490)
-
-        self.enemy_stats["textures_attack"], self.enemy_stats["textures_attack_nr"] = \
-            load_texture_pair_mod(self.enemy_stats["graphic_location"] + self.enemy_stats["textures_attack_file"],
-                                  720, 0, 490)
+        textures_type = ["walk", "idle", "attack", "hurt", "dying"]
+        for texture_type in textures_type:
+            self.enemy_stats[f"textures_{texture_type}"], self.enemy_stats[f"textures_{texture_type}_nr"] = \
+                load_texture_pair_mod(self.enemy_stats["graphic_location"] + self.enemy_stats[f"textures_{texture_type}_file"],
+                                      720, 0, 490)
 
         self.walking_timer = 0
         self.randomized_number = random.randrange(3, 8)
+
         self.hit_box = ([-100, -200], [-100, -100], [100, -100], [100, -200])
 
     def face_dir_change(self, x):
@@ -78,7 +72,7 @@ class Enemy(arcade.Sprite):
         self.enemy_stats["dest_y"] = _y
 
     def go_to_player(self, _x, _y):
-        if arcade.get_distance_between_sprites(self.player, self) < 60:
+        if arcade.get_distance_between_sprites(self.player, self) < 80:
             self.attack()
         else:
             self.enemy_stats["is_moving"] = True
@@ -90,7 +84,14 @@ class Enemy(arcade.Sprite):
         return damage
 
     def make_damage(self):
-        self.player.char_stats["actual_health_points"] -= self.damage
+        if self.player.center_x > self.center_x:
+            self.enemy_stats["face_direction"] = 0
+        else:
+            self.enemy_stats["face_direction"] = 1
+        if self.player.char_stats["actual_health_points"] - self.damage > 0:
+            self.player.char_stats["actual_health_points"] -= self.damage
+        else:
+            self.player.char_stats["actual_health_points"] = 0
         self.player.char_stats["is_hit"] = True
 
     def attack(self):
@@ -101,8 +102,8 @@ class Enemy(arcade.Sprite):
         if self.walking_timer > self.randomized_number * 60 * delta_time:
             center_x_int = int(self.enemy_stats["initial_x"])
             center_y_int = int(self.enemy_stats["initial_y"])
-            random_x = random.randint(center_x_int+100, center_x_int + self.enemy_stats["radius"])
-            random_y = random.randint(center_y_int+100, center_y_int + self.enemy_stats["radius"])
+            random_x = random.randint(center_x_int-self.enemy_stats["radius"], center_x_int + self.enemy_stats["radius"])
+            random_y = random.randint(center_y_int-self.enemy_stats["radius"], center_y_int + self.enemy_stats["radius"])
             self.go_to_point(random_x, random_y)
             self.walking_timer = 0
             self.randomized_number = random.randrange(3, 8)
@@ -143,25 +144,52 @@ class Enemy(arcade.Sprite):
             self.enemy_stats["is_attacking"] = False
             self.enemy_stats["animation_last_state"] = self.enemy_stats["animation_cur_state"]
 
+    def get_hurt(self, delta_time):
+        if self.enemy_stats["is_hit"]:
+            self.enemy_stats["animation_cur_state"] = 3
+            self._check_a_state()
+            self.cur_texture_index += 1
+            if self.cur_texture_index >= \
+                    self.enemy_stats["textures_hurt_nr"] * self.enemy_stats["animation_hurt_speed"]:
+                self.cur_texture_index = 0
+                self.enemy_stats["is_hit"] = False
+            self.texture = self.enemy_stats["textures_hurt"][self.cur_texture_index // self.enemy_stats["animation_hurt_speed"]][self.enemy_stats["face_direction"]]
+        self.enemy_stats["animation_last_state"] = self.enemy_stats["animation_cur_state"]
+
+    def die(self, delta_time):
+        self.hit_box = [[1,1], [1,0], [0, 1]]
+        self.enemy_stats["animation_cur_state"] = 4
+        self._check_a_state()
+        self.cur_texture_index += 1
+        if self.cur_texture_index >= \
+                self.enemy_stats["textures_dying_nr"] * self.enemy_stats["animation_dying_speed"]:
+            self.cur_texture_index = 0
+            add_exp(self.player, self)
+            self.kill()
+        self.texture = self.enemy_stats["textures_dying"][self.cur_texture_index // self.enemy_stats["animation_dying_speed"]][self.enemy_stats["face_direction"]]
+        self.enemy_stats["animation_last_state"] = self.enemy_stats["animation_cur_state"]
+
     def behavior(self, delta_time):
-
-        if self.enemy_stats["is_attacking"]:
+        if self.enemy_stats["actual_health_points"] <= 0:
+            self.die(delta_time)
+            return
+        elif self.enemy_stats["is_attacking"]:
             self.attack_animation()
-
-        if not self.enemy_stats["player_in_radius"]:
-            self.go_around(delta_time)
-        else:
-            self.go_to_player(self.player.center_x, self.player.center_y)
-
+        elif self.enemy_stats["is_hit"]:
+            self.get_hurt(delta_time)
+            return
         if self.enemy_stats["dest_x"] is not None and self.enemy_stats["dest_y"] is not None:
             self.enemy_stats["is_moving"] = True
             self.moving(_x=self.enemy_stats["dest_x"], _y=self.enemy_stats["dest_y"], delta_time=delta_time)
-        else:
-            self.enemy_stats["is_moving"] = False
+        elif self.enemy_stats["player_in_radius"]:
+            self.go_to_player(self.player.center_x, self.player.center_y)
+        elif not self.enemy_stats["player_in_radius"]:
+            self.go_around(delta_time)
+
+        if not self.enemy_stats["is_moving"] and not self.enemy_stats["is_attacking"] and not self.enemy_stats["is_hit"]:
             self.idle_animation(delta_time)
 
     def on_update(self, delta_time: float = 1 / 60):
         self.behavior(delta_time)
-
         self.walking_timer += delta_time
-        pass
+

@@ -43,7 +43,7 @@ class CharClass:
                 "as": 0,     # Attack speed %
                 "lvl_hp": 0,    # HP increasing when lvl up
                 "lvl_mana": 0,    # Mana increasing when lvl up
-                "lvl_stam": 0,    # Stamina increasing when lvl up
+                "lvl_stamina": 0,    # Stamina increasing when lvl up
                 "add_str": 0,    # Strength value when changing
                 "add_dex": 0,    # Dexterity value when changing
                 "add_vit": 0,    # HP increasing when changing
@@ -69,6 +69,7 @@ class CharClass:
                 "graphic_location": f"graphic/player/{self._class}/movement/",
                 "animation_last_state": 0,  # 0 - idle, 1 - moving, 2 - attacking, 3 - hurt
                 "animation_cur_state": 0,
+                "face_direction": 0,
                 "textures_walk_nr": 0,
                 "textures_attack_nr": 0,
                 "textures_idle_nr": 0,
@@ -78,7 +79,12 @@ class CharClass:
                 "textures_idle": [],
                 "textures_hurt": [],
 
-                "is_hit": False
+                "is_hit": False,
+                "is_attacking": False,
+                "is_moving": False,
+                "moving_dest_x": None,
+                "moving_dest_y": None,
+                "attack_frame": 8,
                 }
         }
 
@@ -100,10 +106,10 @@ class CharClass:
 
     def level_up(self):
         values_for_change = [self.char_stats["lvl_hp"], self.char_stats["lvl_mana"], self.char_stats["lvl_stamina"]]
-        for i, attr, actual in enumerate(zip(["max_hp", "max_mana", "stamina"],
-                                             ["actual_health_points", "actual_mana_points", "actual_stamina_points"])):
-            self.set_attribute(attr, values_for_change[i])
-            self.set_attribute(actual, values_for_change[i])
+        for i, [attr, actual] in enumerate(zip(["max_hp", "max_mana", "stamina"],
+                                               ["actual_health_points", "actual_mana_points", "actual_stamina_points"])):
+            self.change_attribute(attr, int(values_for_change[i]))
+            self.change_attribute(actual, int(values_for_change[i]))
 
     def set_attribute(self, attr, value):
         self.char_stats[attr] = value

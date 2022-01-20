@@ -31,7 +31,7 @@ LAYER_NAME_ENTITIES = "Entities"
 
 map1_opt = {
     "map1_location": "general/maps/map1/map1.json",
-    "scale": 0.6,
+    "scale": 0.8,
     "layer_options": {
         LAYER_NAME_WALLS: {
             "use_spatial_hash": True,
@@ -50,16 +50,11 @@ player_map1_opt = {
     "center_x": 200,
     "center_y": 200,
     "movement_speed": 100,
-    "move_up": False,
-    "move_down": False,
-    "move_right": False,
-    "move_left": False,
     "is_moving": False,
     "is_show_stats": False,
     "is_attacking": False,
     "face_direction": 0,  # Left = 1, right = 0
-    "moving_dest_x": None,
-    "moving_dest_y": None
+
 
 }
 
@@ -75,6 +70,7 @@ stage_map1_opt = {
     "tile_map": None,  # Loading maps from file
     "scene": None,  # Creating first scene
     "physics_engine": None,  # Physic engine
+    "physics_engine_enemies": None,  # Physic engine - FOR TEST (ENEMIES COLLISION BETWEEN EACH OTHER)
     "camera": None,  # Camera instance
     "gui": None,  # GUI instance
     "gui_camera": None,  # Camera GUI instance
@@ -96,6 +92,7 @@ stage_map1_opt = {
 ENEMY_STATS = {
     0: {
         "enemy_id": 0,
+        "enemy_name": "FAST ZOMBIE",
         "scale": 0.2,
         "initial_x": None,
         "initial_y": None,
@@ -109,19 +106,20 @@ ENEMY_STATS = {
         "dmg_max": 3,
         "def": 2,
         "lvl": 1,
-        "exp": 300,
+        "exp": 1000,
         "diff": 0,
         "cr": 10,
         "fr": 10,
         "lr": 10,
         "pr": 10,
-        "radius": 200,
+        "radius": 50,
         "is_attacking": False,
         "is_walking": False,
         "is_moving": False,
         "player_in_radius": False,
         "direction_change_x": True,
         "direction_change_y": True,
+        "is_highlighted": False,
         "is_patrol": False,
         "is_hit": False,
         "is_killed": False,
@@ -140,6 +138,14 @@ ENEMY_STATS = {
         "textures_attack_nr": "",
         "textures_attack_file": "attack_12.png",
         "animation_attack_speed": 4,
+        "textures_hurt": [],
+        "textures_hurt_nr": "",
+        "textures_hurt_file": "hurt_12.png",
+        "animation_hurt_speed": 4,
+        "textures_dying": [],
+        "textures_dying_nr": "",
+        "textures_dying_file": "dying_15.png",
+        "animation_dying_speed": 3,
         "animation_idle_speed": 5,
         "animation_last_state": 0,
         "animation_cur_state": 0,
@@ -147,6 +153,7 @@ ENEMY_STATS = {
     },
     1: {
         "enemy_id": 1,
+        "enemy_name": "SLOW ZOMBIE",
         "scale": 0.2,
         "initial_x": None,
         "initial_y": None,
@@ -166,13 +173,14 @@ ENEMY_STATS = {
         "fr": 10,
         "lr": 10,
         "pr": 10,
-        "radius": 200,
+        "radius": 50,
         "is_attacking": False,
         "is_walking": False,
         "is_moving": False,
         "player_in_radius": False,
         "direction_change_x": True,
         "direction_change_y": True,
+        "is_highlighted": False,
         "dest_x": None,
         "dest_y": None,
         "is_patrol": False,
@@ -192,6 +200,14 @@ ENEMY_STATS = {
         "textures_attack_file": "attack_12.png",
         "animation_attack_speed": 4,
         "animation_idle_speed": 5,
+        "textures_hurt": [],
+        "textures_hurt_nr": "",
+        "textures_hurt_file": "hurt_12.png",
+        "animation_hurt_speed": 4,
+        "textures_dying": [],
+        "textures_dying_nr": "",
+        "textures_dying_file": "dying_15.png",
+        "animation_dying_speed": 3,
         "animation_last_state": 0,
         "animation_cur_state": 0,
         "graphic_location": f"graphic/enemy/1/movement/",
@@ -365,7 +381,7 @@ DND = ["max_hp",
        "as",  # Attack speed %
        "lvl_hp",  # HP increasing when lvl up
        "lvl_mana",  # Mana increasing when lvl up
-       "lvl_stam",  # Stamina increasing when lvl up
+       "lvl_stamina",  # Stamina increasing when lvl up
        "add_str",  # Strength value when changing
        "add_dex",  # Dexterity value when changing
        "add_vit",  # HP increasing when changing
@@ -387,5 +403,21 @@ DND = ["max_hp",
        "textures_idle_nr",
        "textures_walk",
        "textures_attack",
-       "textures_idle"
-       ]
+       "textures_idle",
+       "animation_last_state",
+       "animation_cur_state",
+       "face_direction",
+       "textures_walk_nr",
+       "textures_attack_nr",
+       "textures_idle_nr",
+       "textures_hurt_nr",
+       "textures_walk",
+       "textures_attack",
+       "textures_idle",
+       "textures_hurt",
+       "textures_hurt_file",
+       "textures_idle_file",
+       "idle_17.png",
+       "animation_idle_speed",
+       "animation_hurt_speed",
+]
