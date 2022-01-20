@@ -12,15 +12,19 @@ class GUI:
         self.debug = None
 
     def print_hud(self):
+        self.enemy_info()
         self._print_bottom_bar(self.debug)
         self._print_side_bar()
 
+    def enemy_info(self):
+        pass
+
     def _get_char_stats(self):
         stats = ""
-        for stat in self.char_stats:
+        what = ["str", "dex", "vit", "ene", "cr", "fr", "lr", "pr"]
+        for stat in what:
             value_ = self.char_stats[stat]
-            if stat not in DND:
-                stats += f"{SHORTCUTS[stat]}: {value_}\n"
+            stats += f"{SHORTCUTS[stat]}: {value_}\n"
         return stats
 
     def print_char_stats(self, show_stats):

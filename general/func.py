@@ -3,11 +3,16 @@ import re
 import arcade
 import arcade.gui
 import random
-from arcade.arcade_types import Point
+from typing import Iterable
+from arcade.arcade_types import Point, Union
+from arcade import SpriteList
 from win32api import GetKeyState, keybd_event
 from win32con import VK_CAPITAL, VK_NUMLOCK, VK_SCROLL, KEYEVENTF_KEYUP
 from typing import Tuple, Dict, Any, NoReturn, List
-from .const import SCREEN_SIZE, TITLE, LAYER_NAME_PLAYER, LAYER_NAME_ENTITIES, LAYER_NAME_ENEMIES, BG_COLOR
+from .const import SCREEN_SIZE, TITLE, LAYER_NAME_PLAYER, LAYER_NAME_ENTITIES, \
+    LAYER_NAME_ENEMIES, BG_COLOR, NEXT_LEVEL_EXP
+
+_NEXT_LEVEL_EXP = NEXT_LEVEL_EXP
 
 
 def get_key_from_value(dictionary: Dict, value) -> Any:  # Return key or keys from value
@@ -27,6 +32,7 @@ def get_key_from_value(dictionary: Dict, value) -> Any:  # Return key or keys fr
 def checking_lockkey_states() -> NoReturn:  # Checking states of keyboard buttons
     """
     Check and disable all lock keys like Num, Scroll and Caps lock
+    Necessary for properly handle debug console (no modifier can be used)
 
     :return: No return
     """
@@ -103,6 +109,7 @@ def set_enemies(filename: Any, enemy, scene: Any, player: Any) -> NoReturn:
     :param filename: string with path to filename contains placement of every enemy, stat and behavior on each map
     :param enemy: put every created enemy on that list
     :param scene: add enemy to scene to keep it for distance counting, collision etc.
+    TODO: Function should be refactored for more enemy settings in future (like face direction, patrol, aggressiveness)
     """
     enemies = filename()
     """
@@ -172,6 +179,30 @@ def check_the_battle(enemy_list, player):
             enemy.enemy_stats["player_in_radius"] = False
 
 
+def add_exp(player, enemy):
+    player.char_stats["exp"] += enemy.enemy_stats["exp"]
+    enemy.enemy_stats["exp"] = 0
+    p_level = player.char_stats["lvl"]
+    p_exp = player.char_stats["exp"]
+    if p_exp < NEXT_LEVEL_EXP[p_level+1]:
+        return
+    lvl_to_delete = []
+    for lvl, exp in _NEXT_LEVEL_EXP.items():
+        diff = p_exp - exp
+        if diff >= 0:
+            player.char_stats["lvl"] += 1
+            player.level_up()
+            lvl_to_delete.append(lvl)
+            p_exp -= exp
+        else:
+            player.char_stats["exp"] = p_exp
+            break
+
+    for lvl in lvl_to_delete:
+        print(lvl)
+        del _NEXT_LEVEL_EXP[lvl]
+
+
 def load_texture_pair_mod(filename, width, y, height, hit_box_algorithm: str = "Simple"):
     """
     Load a texture pair, with the second being a mirror image of the first.
@@ -201,9 +232,44 @@ def load_texture_pair_mod(filename, width, y, height, hit_box_algorithm: str = "
     return textures_list, amount
 
 
+def draw_highlighted_enemies(enemy_list, sw, sh):
+    """
+    Draw enemy health on the top of the screen
+
+    :param enemy_list: List of the enemies
+    :param sw: Screen width
+    :param sh: Screen height
+    """
+    red = arcade.color.RED_DEVIL
+    bar_width = 150
+    bar_height = 10
+
+    for enemy in enemy_list:
+        if enemy.enemy_stats["is_highlighted"]:
+            health_width = bar_width * (enemy.enemy_stats["actual_health_points"] / enemy.enemy_stats["max_hp"])
+            arcade.draw_rectangle_outline(sw/2, sh-15, bar_width+1, bar_height+1, [0, 0, 0])
+            arcade.draw_rectangle_filled(center_x=sw/2 - 0.5 * (bar_width - health_width),
+                                         center_y=sh-15,
+                                         width=health_width,
+                                         height=bar_height,
+                                         color=red)
+            arcade.draw_text(f"{enemy.enemy_stats['enemy_name']} {enemy.enemy_stats['actual_health_points']} HP",
+                             sw/2-50,
+                             sh-20,
+                             [255, 255, 255],
+                             7,
+                             100, bold=True,
+                             font_name="Tahoma")
+
+
 def _highlight_enemy(mouse_x, mouse_y, enemy_list):
     for enemy in arcade.get_sprites_at_point([mouse_x, mouse_y], enemy_list):
-        enemy.draw_hit_box()
+        print("je")
+        enemy.enemy_stats["is_highlighted"] = True
+        break
+    else:
+        for enemy in enemy_list:
+            enemy.enemy_stats["is_highlighted"] = False
 
 
 def _highlight_item(mouse_x, mouse_y, item_list):
@@ -237,6 +303,13 @@ def center_camera_to_player(camera, player_x, player_y):
     camera.move_to(player_centered, speed=1)
 
 
+def stop_player_if_obstacle(player, sprite_list):
+    closest_sprite, dist = arcade.get_closest_sprite(player, sprite_list)
+    if dist < 10:
+        print(dist)
+        player._stop()
+
+
 def rescale(view):
     screen_w, screen_h = get_window_size()
     if view.screen_w != screen_w and view.screen_h != screen_h:
@@ -246,29 +319,6 @@ def rescale(view):
         view.stage["gui_camera"].resize(screen_w, screen_h)
         view.stage["player_list"][0].rescale()
 
-
-def get_map_point2(map_point: Point, player_point: Point) -> Point:
-    _x, _y = map_point
-    _x_player, _y_player = player_point
-    screen_w, screen_h = get_window_size()
-    #   800         1024/2 = 512 ; example
-    if _x_player >= screen_w/2:
-        x = _x - screen_w/2
-    # -172 = 340 - 1024/2 ; example
-    else:
-        #   400     1024/2 = 512 ; example
-        # _x_player <= 512 ; example
-        x = _x
-        _x_player = 0
-    # 300 = 300 ; example
-
-    if _y_player >= screen_h/2:
-        y = _y - screen_h/2
-    else:
-        y = _y
-        _y_player = 0
-
-    return x + _x_player, y + _y_player
 
 def get_map_point(map_point: Point, player_point: Point) -> Point:
     _x, _y = map_point
@@ -354,3 +404,4 @@ class DefaultMenu(arcade.View):
     def on_draw(self):
         arcade.start_render()
         self.manager.draw()
+

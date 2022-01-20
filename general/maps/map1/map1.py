@@ -1,11 +1,11 @@
 import arcade
 import arcade.gui
-from abc import ABC, abstractmethod
 from general.char_class.player import PlayerCharacter
 from general.enemy.enemy import Enemy
 from general.func import set_bg_color, set_player, checking_lockkey_states,\
     get_window_size, center_camera_to_player, set_enemies, \
-    set_sprites_in_spritelist, check_the_battle, highlight_object
+    set_sprites_in_spritelist, check_the_battle, highlight_object, draw_highlighted_enemies
+from general.physic_engine import PhysicsEngineSimple, PhysicForEnemies
 from general.menu.pause_menu import PauseMenu
 from general.const import map1_opt, FUNC_KEYS, stage_map1_opt
 from general.const import (LAYER_NAME_WALLS,
@@ -50,12 +50,18 @@ class GameViewStart(arcade.View):
         # Camera and physic engine
         self.stage["camera"] = arcade.Camera(self.screen_w, self.screen_h)
         self.stage["gui_camera"] = arcade.Camera(self.screen_w, self.screen_h)
-        self.stage["physic_engine"] = arcade.PhysicsEngineSimple(self.player,
-                                                                 [
-                                                                     self.stage["scene"].get_sprite_list(LAYER_NAME_WALLS),
-                                                                     self.stage["scene"].get_sprite_list(LAYER_NAME_ENTITIES)
-                                                                  ]
-                                                                 )
+        self.stage["physic_engine"] = PhysicsEngineSimple(self.player,
+                                                          [
+                                                              self.stage["scene"].get_sprite_list(LAYER_NAME_WALLS),
+                                                              self.stage["scene"].get_sprite_list(LAYER_NAME_ENEMIES)
+                                                          ]
+                                                          )
+        self.stage["physics_engine_enemies"] = PhysicForEnemies(self.stage["scene"].get_sprite_list(LAYER_NAME_ENEMIES),
+                                                                [
+                                                                    self.stage["scene"].get_sprite_list(LAYER_NAME_ENTITIES),
+                                                                    self.stage["scene"].get_sprite_list(LAYER_NAME_WALLS)
+                                                                ]
+                                                                )
 
     def on_draw(self):
         # Start rendering
@@ -67,22 +73,24 @@ class GameViewStart(arcade.View):
         self.stage["scene"].draw()
         # Some debug
         self.player.print_char_info_over_head()
-
         # GUI for player at the end on the top view level
         self.stage["gui_camera"].use()
+        draw_highlighted_enemies(self.stage["scene"].get_sprite_list(LAYER_NAME_ENEMIES), self.screen_w, self.screen_h)
         self.player.print_hud()
 
     def on_mouse_press(self, x: float, y: float, button: int, modifiers: int):
-        self.player.set_move(x, y)
+        self.player.click_event(x, y,
+                                self.stage["scene"].get_sprite_list(LAYER_NAME_ENEMIES),
+                                self.stage["scene"].get_sprite_list(LAYER_NAME_WALLS))
 
     def on_mouse_drag(self, x: float, y: float, dx: float, dy: float, _buttons: int, _modifiers: int):
-        self.player.set_move(x, y)
-        #self.player.debug = (x, y)
+        self.on_mouse_press(x, y, button=_buttons, modifiers=_modifiers)
 
     def on_mouse_motion(self, x: float, y: float, dx: float, dy: float):
         self.on_mouse_hover(x, y)
 
     def on_mouse_hover(self, x, y):
+        self.player.debug = [x, y]
         highlight_object(
                          x, y,
                          self.player,
@@ -106,13 +114,19 @@ class GameViewStart(arcade.View):
             self.player.func_keys(_symbol+1000, _modifiers)
 
     def on_update(self, delta_time: float):
+
+        set_sprites_in_spritelist(self.stage["scene"].get_sprite_list('Entities'))
+
+        for entity in self.stage["scene"].get_sprite_list('Entities'):
+            entity.on_update(delta_time)
+
+        check_the_battle(self.stage["scene"].get_sprite_list('Enemies'), self.player)
+
         center_camera_to_player(self.stage["camera"],
                                 self.player.center_x,
                                 self.player.center_y)
-        set_sprites_in_spritelist(self.stage["scene"].get_sprite_list('Entities'))
-        for entity in self.stage["scene"].get_sprite_list('Entities'):
-            entity.on_update(delta_time)
-        check_the_battle(self.stage["scene"].get_sprite_list('Enemies'), self.player)
-
         self.stage["physic_engine"].update()
+        self.stage["physics_engine_enemies"].update()
+        #stop_player_if_obstacle(self.player, self.stage["scene"].get_sprite_list('Walls'))
+
 
