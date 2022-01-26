@@ -46,7 +46,7 @@ map1_opt = {
 }
 
 player_map1_opt = {
-    "scale": 0.2,
+    "scale": 0.1,
     "center_x": 200,
     "center_y": 200,
     "movement_speed": 100,
@@ -93,7 +93,7 @@ ENEMY_STATS = {
     0: {
         "enemy_id": 0,
         "enemy_name": "FAST ZOMBIE",
-        "scale": 0.2,
+        "scale": 0.1,
         "initial_x": None,
         "initial_y": None,
         "max_hp": 100,
@@ -154,7 +154,7 @@ ENEMY_STATS = {
     1: {
         "enemy_id": 1,
         "enemy_name": "SLOW ZOMBIE",
-        "scale": 0.2,
+        "scale": 0.1,
         "initial_x": None,
         "initial_y": None,
         "max_hp": 100,

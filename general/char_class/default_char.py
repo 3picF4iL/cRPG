@@ -85,6 +85,7 @@ class CharClass:
                 "moving_dest_x": None,
                 "moving_dest_y": None,
                 "attack_frame": 8,
+                "points_for_stats": 0,
                 }
         }
 
@@ -110,6 +111,7 @@ class CharClass:
                                                ["actual_health_points", "actual_mana_points", "actual_stamina_points"])):
             self.change_attribute(attr, int(values_for_change[i]))
             self.change_attribute(actual, int(values_for_change[i]))
+        self.char_stats["points_for_stats"] += 5
 
     def set_attribute(self, attr, value):
         self.char_stats[attr] = value
