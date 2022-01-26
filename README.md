@@ -1,5 +1,6 @@
 # cRPG
-Game used "arcade" framework for simple 2D game creating. Changed game engine a lil bit and put it in the separate file.
+Game used "arcade" framework for simple 2D game creating.
+Changed game engine a lil bit and put it in the separate file.
 --------
 
 21.01.2022 - 1:14
