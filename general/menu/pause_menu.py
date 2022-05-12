@@ -1,4 +1,4 @@
-import arcade
+import arcade.arcade as arcade
 from general.func import DefaultMenu, rescale
 from .settings_menu import Settings
 

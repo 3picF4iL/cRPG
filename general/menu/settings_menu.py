@@ -1,5 +1,5 @@
-import arcade
-import arcade.gui
+import arcade.arcade as arcade
+import arcade.arcade.gui
 from general.func import set_window_with_size, DefaultMenu
 
 
