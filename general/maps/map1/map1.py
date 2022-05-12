@@ -1,11 +1,11 @@
-import arcade
-import arcade.gui
+from arcade import arcade as arcade
+import arcade.arcade.gui
 from general.char_class.player import PlayerCharacter
 from general.enemy.enemy import Enemy
 from general.func import set_bg_color, set_player, checking_lockkey_states,\
     get_window_size, center_camera_to_player, set_enemies, \
     set_sprites_in_spritelist, check_the_battle, highlight_object, draw_highlighted_enemies
-from general.physic_engine import PhysicsEngineSimple, PhysicForEnemies
+from arcade.arcade.physics_engines import PhysicsEngineSimple, PhysicForEnemies
 from general.menu.pause_menu import PauseMenu
 from general.const import map1_opt, FUNC_KEYS, stage_map1_opt
 from general.const import (LAYER_NAME_WALLS,
@@ -14,7 +14,7 @@ from general.const import (LAYER_NAME_WALLS,
                            LAYER_NAME_ENTITIES)
 
 
-class GameViewStart(arcade.View):
+class GameViewStart(arcade.arcade.View):
     def __init__(self):
         checking_lockkey_states()  # Turn off LOCK's keys
         super().__init__()
@@ -30,9 +30,9 @@ class GameViewStart(arcade.View):
         map_name = map1_opt["map1_location"]
         layer_options = map1_opt["layer_options"]
 
-        self.stage["tile_map"] = arcade.load_tilemap(map_name, self.stage["map_opt"]["scale"],
+        self.stage["tile_map"] = arcade.arcade.load_tilemap(map_name, self.stage["map_opt"]["scale"],
                                                      layer_options)
-        self.stage["scene"] = arcade.Scene.from_tilemap(self.stage["tile_map"])
+        self.stage["scene"] = arcade.arcade.Scene.from_tilemap(self.stage["tile_map"])
 
         # Player and entities settings
         set_player(0,
@@ -48,8 +48,8 @@ class GameViewStart(arcade.View):
             self.player)
 
         # Camera and physic engine
-        self.stage["camera"] = arcade.Camera(self.screen_w, self.screen_h)
-        self.stage["gui_camera"] = arcade.Camera(self.screen_w, self.screen_h)
+        self.stage["camera"] = arcade.arcade.Camera(self.screen_w, self.screen_h)
+        self.stage["gui_camera"] = arcade.arcade.Camera(self.screen_w, self.screen_h)
         self.stage["physic_engine"] = PhysicsEngineSimple(self.player,
                                                           [
                                                               self.stage["scene"].get_sprite_list(LAYER_NAME_WALLS),
@@ -65,7 +65,7 @@ class GameViewStart(arcade.View):
 
     def on_draw(self):
         # Start rendering
-        arcade.start_render()
+        arcade.arcade.start_render()
 
         # Camera use
         self.stage["camera"].use()

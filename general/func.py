@@ -1,11 +1,11 @@
 import os
 import re
-import arcade
-import arcade.gui
+import arcade.arcade as arcade
+import arcade.arcade.gui
 import random
 from typing import Iterable
-from arcade.arcade_types import Point, Union
-from arcade import SpriteList
+from arcade.arcade.arcade_types import Point, Union
+from arcade.arcade import SpriteList
 from win32api import GetKeyState, keybd_event
 from win32con import VK_CAPITAL, VK_NUMLOCK, VK_SCROLL, KEYEVENTF_KEYUP
 from typing import Tuple, Dict, Any, NoReturn, List
@@ -37,7 +37,8 @@ def checking_lockkey_states() -> NoReturn:  # Checking states of keyboard button
     :return: No return
     """
 
-    def disable_lockkey(key: int) -> NoReturn:  # Disable states of Caps Lock, Num Lock and Scroll Lock buttons on keyboard
+    def disable_lockkey(
+            key: int) -> NoReturn:  # Disable states of Caps Lock, Num Lock and Scroll Lock buttons on keyboard
         """
         Internal function for key state checking
 
@@ -49,7 +50,7 @@ def checking_lockkey_states() -> NoReturn:  # Checking states of keyboard button
         pass
 
     keys = [VK_NUMLOCK,  # Num Lock
-            VK_SCROLL,   # Scroll Lock
+            VK_SCROLL,  # Scroll Lock
             VK_CAPITAL]  # Caps Lock
 
     for _key in keys:
@@ -67,7 +68,7 @@ def set_window_with_size(size: int = 1, *args) -> Any:
     | Default is 1 = normal
 
     :param size: type int: 0, 1, 2
-    :param args: type waiting for window from arcade.Window
+    :param args: type waiting for window from arcade.arcade.Window
     :return: arcade window
     """
     if len(args) == 1:
@@ -79,7 +80,7 @@ def set_window_with_size(size: int = 1, *args) -> Any:
     screen_h = SCREEN_SIZE[size][1]
 
     if window is None:
-        return arcade.Window(screen_w, screen_h, TITLE)
+        return arcade.arcade.Window(screen_w, screen_h, TITLE)
     window.set_size(screen_w, screen_h)
 
 
@@ -118,15 +119,15 @@ def set_enemies(filename: Any, enemy, scene: Any, player: Any) -> NoReturn:
     """
     for _, line in enumerate(enemies.splitlines()):
         line = line.split()
-        for i in range(1, int(line[1])+1):
+        for i in range(1, int(line[1]) + 1):
             enemy_ = enemy(int(line[0]), player)
             enemy_.personal_id = _
             enemy_.center_x = random.randint(int(line[3]), int(line[3]) + int(line[2]))
             enemy_.center_y = random.randint(int(line[4]), int(line[4]) + int(line[2]))
             enemy_.enemy_stats["initial_x"] = enemy_.center_x
             enemy_.enemy_stats["initial_y"] = enemy_.center_y
-            #enemy_.enemy_stats["dest_x"] = int(line[5])
-            #enemy_.enemy_stats["dest_y"] = int(line[6])
+            # enemy_.enemy_stats["dest_x"] = int(line[5])
+            # enemy_.enemy_stats["dest_y"] = int(line[6])
 
             # Adding enemy to entity group and enemy group
             scene.add_sprite(LAYER_NAME_ENEMIES, enemy_, visible=False)
@@ -139,7 +140,7 @@ def get_window_size() -> Tuple:
 
     :return: Tuple: [width, height]
     """
-    current_window = arcade.get_window()
+    current_window = arcade.arcade.get_window()
     return current_window.get_size()
 
 
@@ -155,12 +156,12 @@ def set_bg_color(color: Tuple = BG_COLOR) -> None:
     :param color: Desired color
     :return: None
     """
-    return arcade.set_background_color(color)
+    return arcade.arcade.set_background_color(color)
 
 
 def check_the_battle(enemy_list, player):
     for enemy in enemy_list:
-        dist = arcade.get_distance_between_sprites(player, enemy)
+        dist = arcade.arcade.get_distance_between_sprites(player, enemy)
         if dist < 150:
             enemy.enemy_stats["player_in_radius"] = True
             # if arcade.get_distance_between_sprites(player, enemy) <= 50 and player.is_attacking:
@@ -184,7 +185,7 @@ def add_exp(player, enemy):
     enemy.enemy_stats["exp"] = 0
     p_level = player.char_stats["lvl"]
     p_exp = player.char_stats["exp"]
-    if p_exp < NEXT_LEVEL_EXP[p_level+1]:
+    if p_exp < NEXT_LEVEL_EXP[p_level + 1]:
         return
     lvl_to_delete = []
     for lvl, exp in _NEXT_LEVEL_EXP.items():
@@ -215,19 +216,19 @@ def load_texture_pair_mod(filename, width, y, height, hit_box_algorithm: str = "
 
     for multiplying in range(amount):
         textures_list.append([
-            arcade.texture.load_texture(filename,
-                                        hit_box_algorithm=hit_box_algorithm,
-                                        x=multiplying*width,
-                                        y=y,
-                                        width=width,
-                                        height=height),
-            arcade.texture.load_texture(filename,
-                                        flipped_horizontally=True,
-                                        hit_box_algorithm=hit_box_algorithm,
-                                        x=multiplying*width,
-                                        y=y,
-                                        width=width,
-                                        height=height)
+            arcade.arcade.texture.load_texture(filename,
+                                               hit_box_algorithm=hit_box_algorithm,
+                                               x=multiplying * width,
+                                               y=y,
+                                               width=width,
+                                               height=height),
+            arcade.arcade.texture.load_texture(filename,
+                                               flipped_horizontally=True,
+                                               hit_box_algorithm=hit_box_algorithm,
+                                               x=multiplying * width,
+                                               y=y,
+                                               width=width,
+                                               height=height)
         ])
     return textures_list, amount
 
@@ -240,22 +241,22 @@ def draw_highlighted_enemies(enemy_list, sw, sh):
     :param sw: Screen width
     :param sh: Screen height
     """
-    red = arcade.color.RED_DEVIL
+    red = arcade.arcade.color.RED_DEVIL
     bar_width = 150
     bar_height = 10
 
     for enemy in enemy_list:
         if enemy.enemy_stats["is_highlighted"]:
             health_width = bar_width * (enemy.enemy_stats["actual_health_points"] / enemy.enemy_stats["max_hp"])
-            arcade.draw_rectangle_outline(sw/2, sh-15, bar_width+1, bar_height+1, [0, 0, 0])
-            arcade.draw_rectangle_filled(center_x=sw/2 - 0.5 * (bar_width - health_width),
-                                         center_y=sh-15,
+            arcade.arcade.draw_rectangle_outline(sw / 2, sh - 15, bar_width + 1, bar_height + 1, [0, 0, 0])
+            arcade.arcade.draw_rectangle_filled(center_x=sw / 2 - 0.5 * (bar_width - health_width),
+                                         center_y=sh - 15,
                                          width=health_width,
                                          height=bar_height,
                                          color=red)
-            arcade.draw_text(f"{enemy.enemy_stats['enemy_name']} {enemy.enemy_stats['actual_health_points']} HP",
-                             sw/2-50,
-                             sh-20,
+            arcade.arcade.draw_text(f"{enemy.enemy_stats['enemy_name']} {enemy.enemy_stats['actual_health_points']} HP",
+                             sw / 2 - 50,
+                             sh - 20,
                              [255, 255, 255],
                              7,
                              100, bold=True,
@@ -263,7 +264,7 @@ def draw_highlighted_enemies(enemy_list, sw, sh):
 
 
 def _highlight_enemy(mouse_x, mouse_y, enemy_list):
-    for enemy in arcade.get_sprites_at_point([mouse_x, mouse_y], enemy_list):
+    for enemy in arcade.arcade.get_sprites_at_point([mouse_x, mouse_y], enemy_list):
         print("je")
         enemy.enemy_stats["is_highlighted"] = True
         break
@@ -273,7 +274,7 @@ def _highlight_enemy(mouse_x, mouse_y, enemy_list):
 
 
 def _highlight_item(mouse_x, mouse_y, item_list):
-    for item in arcade.get_sprites_at_point([mouse_x, mouse_y], item_list):
+    for item in arcade.arcade.get_sprites_at_point([mouse_x, mouse_y], item_list):
         item.draw_hit_box()
 
 
@@ -304,7 +305,7 @@ def center_camera_to_player(camera, player_x, player_y):
 
 
 def stop_player_if_obstacle(player, sprite_list):
-    closest_sprite, dist = arcade.get_closest_sprite(player, sprite_list)
+    closest_sprite, dist = arcade.arcade.get_closest_sprite(player, sprite_list)
     if dist < 10:
         print(dist)
         player._stop()
@@ -325,8 +326,8 @@ def get_map_point(map_point: Point, player_point: Point) -> Point:
     _x_player, _y_player = player_point
     screen_w, screen_h = get_window_size()
     #   800         1024/2 = 512 ; example
-    if _x_player >= screen_w/2:
-        x = _x - screen_w/2
+    if _x_player >= screen_w / 2:
+        x = _x - screen_w / 2
     # -172 = 340 - 1024/2 ; example
     else:
         #   400     1024/2 = 512 ; example
@@ -335,8 +336,8 @@ def get_map_point(map_point: Point, player_point: Point) -> Point:
         _x_player = 0
     # 300 = 300 ; example
 
-    if _y_player >= screen_h/2:
-        y = _y - screen_h/2
+    if _y_player >= screen_h / 2:
+        y = _y - screen_h / 2
     else:
         y = _y
         _y_player = 0
@@ -344,7 +345,7 @@ def get_map_point(map_point: Point, player_point: Point) -> Point:
     return x + _x_player, y + _y_player
 
 
-class DefaultMenu(arcade.View):
+class DefaultMenu(arcade.arcade.View):
     def __init__(self, **kwargs):
         super().__init__()
         print(kwargs)
@@ -404,4 +405,3 @@ class DefaultMenu(arcade.View):
     def on_draw(self):
         arcade.start_render()
         self.manager.draw()
-

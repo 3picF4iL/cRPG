@@ -1,4 +1,4 @@
-import arcade
+from arcade import arcade as arcade
 from general.func import set_window_with_size
 from general.maps.map1.map1 import GameViewStart
 # from general.menu.start_menu import MainMenu
