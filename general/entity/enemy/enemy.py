@@ -3,7 +3,7 @@ import math
 import random
 from general.func import add_exp
 from general.const import ENEMY_STATS
-from ..entity_function import load_textures
+from ..entity_function import load_textures, face_dir_change
 
 
 def load_enemy_stats(enemy_class):
@@ -27,12 +27,6 @@ class Enemy(arcade.Sprite):
         self.randomized_number = random.randrange(3, 8)
 
         self.hit_box = ([-100, -200], [-100, -100], [100, -100], [100, -200])
-
-    def face_dir_change(self, x):
-        if x > 0:
-            self.enemy_stats["face_direction"] = 0
-        elif x < 0:
-            self.enemy_stats["face_direction"] = 1
 
     def _check_a_state(self):
         if self.enemy_stats["animation_cur_state"] != self.enemy_stats["animation_last_state"]:
@@ -58,7 +52,7 @@ class Enemy(arcade.Sprite):
         self.center_x += math.cos(angle) * self.enemy_stats["mvm"] * delta_time
         self.center_y += math.sin(angle) * self.enemy_stats["mvm"] * delta_time
 
-        self.face_dir_change(x_diff)
+        face_dir_change(self.enemy_stats, x_diff)
         if math.fabs(round(x_diff)) <= 1 and math.fabs(round(y_diff)) <= 1:
             self._stop()
 

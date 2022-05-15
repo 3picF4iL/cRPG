@@ -3,10 +3,10 @@ import arcade
 import random
 
 from general.const import player_map1_opt
-from general.func import load_texture_pair_mod, get_map_point
+from general.func import get_map_point
 from general.gui import GUI
 from general.entity.character.default_char import CharClass
-from ..entity_function import load_textures
+from ..entity_function import load_textures, face_dir_change
 
 
 class PlayerCharacter(arcade.Sprite, GUI, CharClass):
@@ -74,7 +74,7 @@ class PlayerCharacter(arcade.Sprite, GUI, CharClass):
         self.char_stats["is_moving"] = True
         self.char_stats["moving_dest_x"] = dest_x
         self.char_stats["moving_dest_y"] = dest_y
-        self.face_dir_change(self.char_stats["moving_dest_x"] - self.center_x)
+        face_dir_change(self.char_stats, self.char_stats["moving_dest_x"] - self.center_x)
 
     def _stop(self):
         self.timer = 0
@@ -137,11 +137,11 @@ class PlayerCharacter(arcade.Sprite, GUI, CharClass):
     # def change_movement_speed(self, value):
     #     self.char_stats["movement_speed"] += value
 
-    def face_dir_change(self, x):
-        if x > 0:
-            self.char_stats["face_direction"] = 0
-        elif x < 0:
-            self.char_stats["face_direction"] = 1
+    # def face_dir_change(self, x):
+    #     if x > 0:
+    #         self.char_stats["face_direction"] = 0
+    #     elif x < 0:
+    #         self.char_stats["face_direction"] = 1
 
     def reset_animation_state(self):
         self.char_stats["is_hit"] = False

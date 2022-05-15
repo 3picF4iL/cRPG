@@ -16,3 +16,10 @@ def load_textures(texture_list: List, entity_variables: Dict):
             load_texture_pair_mod(entity_variables["graphic_location"] +
                                   entity_variables[f"textures_{texture_type}_file"],
                                   texture_width, texture_shift, texture_height)
+
+
+def face_dir_change(entity_variables, x):
+    if x > 0:
+        entity_variables["face_direction"] = 0
+    elif x < 0:
+        entity_variables["face_direction"] = 1
