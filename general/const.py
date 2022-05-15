@@ -421,3 +421,6 @@ DND = ["max_hp",
        "animation_idle_speed",
        "animation_hurt_speed",
 ]
+
+ENTITY_TEXTURE_SET = [720, 0, 490]  # Entity texture contains frames merged into one pic, these settings describes
+# Width, shift and height of the one frame
