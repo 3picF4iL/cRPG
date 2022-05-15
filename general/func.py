@@ -89,6 +89,7 @@ def set_sprites_in_spritelist(sprite_list):
 def set_player(char_class: int, player, scene: Any) -> NoReturn:
     """
     Creating and inserting player object into player list (for future drawing)
+    and entity list
 
     :param char_class: string with Char class name e.g. 0, mage, hunter etc.
     :param player: Player character
@@ -99,6 +100,7 @@ def set_player(char_class: int, player, scene: Any) -> NoReturn:
     player_ = player(char_class)
     scene.add_sprite(LAYER_NAME_PLAYER, player_, visible=False)
     scene.add_sprite(LAYER_NAME_ENTITIES, player_)
+    return player_
 
 
 def set_enemies(filename: Any, enemy, scene: Any, player: Any) -> NoReturn:

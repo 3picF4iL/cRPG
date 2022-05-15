@@ -59,11 +59,11 @@ player_map1_opt = {
 }
 
 stage_map1_opt = {
-    # Elements lists appearing on the maps
-    "player_list": arcade.SpriteList(visible=False),  # List of the players on the maps
-    "enemy_list": arcade.SpriteList(visible=False),  # List of the enemies on the maps
-    "item_on_floor_list": arcade.SpriteList(),  # List of the items on the maps
-    "entities_list": arcade.SpriteList(),
+    # Elements lists appearing on the map
+    # "Player": arcade.SpriteList(visible=False),  # List of the players on the maps
+    # "Enemies": arcade.SpriteList(visible=False),  # List of the enemies on the maps
+    # "item_on_floor_list": arcade.SpriteList(),  # List of the items on the maps
+    # "Entities": arcade.SpriteList(),
 
     # Elements that need to be placed in the code
     "debugger": None,  # For the debug console
