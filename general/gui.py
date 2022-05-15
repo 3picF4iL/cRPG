@@ -2,6 +2,7 @@
 Temp desc
 """
 import arcade
+import arcade.gui
 from .const import NEXT_LEVEL_EXP, SHORTCUTS, DND
 from .func import get_window_size
 
@@ -24,7 +25,11 @@ class GUI:
         what = ["str", "dex", "vit", "ene", "cr", "fr", "lr", "pr"]
         for stat in what:
             value_ = self.char_stats[stat]
-            stats += f"{SHORTCUTS[stat]}: {value_}\n"
+            if stat == "cr":
+                new_line = "\n"
+            else:
+                new_line = ""
+            stats += f"{new_line}{SHORTCUTS[stat]}: {value_}\n"
         return stats
 
     def print_char_stats(self, show_stats):
@@ -35,9 +40,22 @@ class GUI:
         """
         if show_stats:
             stats = self._get_char_stats()
+            bar_x = self.s_w - 75
+            bar_y = self.s_h / 2
+            bar_width = 200
+            bar_height = self.s_h - 200
+            text_x = self.s_w - 170
+            text_y = self.s_h - 150
+            # buttons_w = self.s_w - 20
+            # button_h = self.s_h - 145
+            # color_ = arcade.color.RED_DEVIL
+            # button = arcade.gui.UIFlatButton()
 
-            arcade.draw_rectangle_filled(self.s_w - 75, self.s_h / 2, 150, self.s_h - 200, arcade.color.ANTIQUE_BRONZE)
-            arcade.draw_text(f"{stats}", self.s_w - 148, self.s_h - 150, [0, 0, 0], 10, 200, 'left',
+            if self.char_stats["points_for_stats"] != 0:
+                stats = f"Points left: {self.char_stats['points_for_stats']}\n\n" + stats
+
+            arcade.draw_rectangle_filled(bar_x, bar_y, bar_width, bar_height, arcade.color.ANTIQUE_BRONZE)
+            arcade.draw_text(f"{stats}", text_x, text_y, [0, 0, 0], 10, 200, 'left',
                              bold=True, multiline=True)
 
     def print_player_main_stats(self, transparent):

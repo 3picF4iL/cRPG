@@ -55,7 +55,7 @@ class PlayerCharacter(arcade.Sprite, GUI, CharClass):
         obstacles = arcade.get_sprites_at_point([_x, _y], wall_list)
         if obstacles:
             print("USTAWIENIE COORDYNATOW")
-            #_x, _y = self.where_can_go(obstacles[0])
+            # _x, _y = self.where_can_go(obstacles[0])
         elif enemies:
             distance_between_player_enemy = arcade.get_distance(enemies[0].center_x,
                                                                 enemies[0].center_y,
@@ -64,15 +64,15 @@ class PlayerCharacter(arcade.Sprite, GUI, CharClass):
 
             if distance_between_player_enemy < self.height/2 + enemies[0].height/2:
                 self._attack(enemies[0])
-                print("FUNKCJA ATAKU")
+                # print("FUNKCJA ATAKU")
                 return
         else:
             _y = _y + (self.height/2) - 10
-        print("FUNKCJA CHODZENIA: ide do: ", _x, _y)
+        # print("FUNKCJA CHODZENIA: ide do: ", _x, _y)
         self._start(_x, _y)
 
     def _start(self, dest_x, dest_y):
-        print("start")
+        # print("start")
         self.char_stats["is_moving"] = True
         self.char_stats["moving_dest_x"] = dest_x
         self.char_stats["moving_dest_y"] = dest_y
@@ -112,7 +112,7 @@ class PlayerCharacter(arcade.Sprite, GUI, CharClass):
         enemy.enemy_stats["is_hit"] = True
 
     def moving(self, delta_time):
-        print("ide")
+        # print("ide")
         # self.timer += delta_time
         tmp_x = self.center_x
         tmp_y = self.center_y
@@ -132,6 +132,11 @@ class PlayerCharacter(arcade.Sprite, GUI, CharClass):
     def _check_a_state(self):
         if self.char_stats["animation_cur_state"] != self.char_stats["animation_last_state"]:
             self.cur_texture_index = 0
+            self.reset_animation_state()
+    #
+    # def print_damage_info(self, damage):
+    #     damage_text = arcade.create_text_sprite(f"{damage}", 400, 250, [255, 5, 10], 15, 100, anchor_x="center", anchor_y="center")
+    #
     #
     # def set_movement_speed(self, value):
     #     self.char_stats["movement_speed"] = value
@@ -159,6 +164,8 @@ class PlayerCharacter(arcade.Sprite, GUI, CharClass):
                 if self.cur_texture_index == self.char_stats["attack_frame"] * self.char_stats["animation_attack_speed"] and enemy is not None:
                     self.make_damage(enemy)
                     self.char_stats["is_hit"] = False
+            # elif what_type == "hurt":
+
             if self.cur_texture_index >= self.char_stats[f"textures_{what_type}_nr"] \
                     * self.char_stats[f"animation_{what_type}_speed"]:
                 self.cur_texture_index = 0

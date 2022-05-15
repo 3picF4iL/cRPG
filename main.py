@@ -5,6 +5,7 @@ from general.maps.map1.map1 import GameViewStart
 
 #arcade.configure_logging()
 
+
 def main():
     #window = set_window_with_size()
     window = arcade.Window()
