@@ -1,8 +1,9 @@
 import arcade
 import math
 import random
-from general.func import load_texture_pair_mod, add_exp
+from general.func import add_exp
 from general.const import ENEMY_STATS
+from ..entity_function import load_textures
 
 
 def load_enemy_stats(enemy_class):
@@ -20,10 +21,7 @@ class Enemy(arcade.Sprite):
         self.cur_texture_index = self.enemy_stats["animation_cur_state"]
 
         textures_type = ["walk", "idle", "attack", "hurt", "dying"]
-        for texture_type in textures_type:
-            self.enemy_stats[f"textures_{texture_type}"], self.enemy_stats[f"textures_{texture_type}_nr"] = \
-                load_texture_pair_mod(self.enemy_stats["graphic_location"] + self.enemy_stats[f"textures_{texture_type}_file"],
-                                      720, 0, 490)
+        load_textures(textures_type, self.enemy_stats)
 
         self.walking_timer = 0
         self.randomized_number = random.randrange(3, 8)

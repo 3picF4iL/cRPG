@@ -5,7 +5,8 @@ import random
 from general.const import player_map1_opt
 from general.func import load_texture_pair_mod, get_map_point
 from general.gui import GUI
-from general.entity.char_class.default_char import CharClass
+from general.entity.character.default_char import CharClass
+from ..entity_function import load_textures
 
 
 class PlayerCharacter(arcade.Sprite, GUI, CharClass):
@@ -24,10 +25,7 @@ class PlayerCharacter(arcade.Sprite, GUI, CharClass):
         self.timer = 0
 
         textures_type = ["walk", "idle", "attack", "hurt"]
-        for texture_type in textures_type:
-            self.char_stats[f"textures_{texture_type}"], self.char_stats[f"textures_{texture_type}_nr"] = \
-                load_texture_pair_mod(self.char_stats["graphic_location"] + self.char_stats[f"textures_{texture_type}_file"],
-                                      720, 0, 490)
+        load_textures(textures_type, self.char_stats)
 
         self.hit_box = ([-100, -200], [-100, -100], [100, -100], [100, -200])
 
