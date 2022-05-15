@@ -5,7 +5,7 @@ import random
 from general.const import player_map1_opt
 from general.func import load_texture_pair_mod, get_map_point
 from general.gui import GUI
-from general.entity.char_class import CharClass
+from general.entity.char_class.default_char import CharClass
 
 
 class PlayerCharacter(arcade.Sprite, GUI, CharClass):
