@@ -1,4 +1,5 @@
 from typing import List, Dict
+import random
 from ..const import ENTITY_TEXTURE_SET
 from ..func import load_texture_pair_mod
 
@@ -28,3 +29,7 @@ def face_dir_change(entity_variables, x):
 def check_state(entity):
     if entity.variables["animation_cur_state"] != entity.variables["animation_last_state"]:
         entity.cur_texture_index = 0
+
+
+def damage(entity):
+    return random.randint(entity.variables["dmg_min"], entity.variables["dmg_max"])

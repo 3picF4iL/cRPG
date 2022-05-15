@@ -3,7 +3,7 @@ import math
 import random
 from general.func import add_exp
 from general.const import ENEMY_STATS
-from ..entity_function import load_textures, face_dir_change, check_state
+from ..entity_function import load_textures, face_dir_change, check_state, damage
 
 
 def load_enemy_stats(enemy_class):
@@ -66,18 +66,13 @@ class Enemy(arcade.Sprite):
             self.variables["is_moving"] = True
             self.go_to_point(_x, _y)
 
-    @property
-    def damage(self):
-        damage = random.randint(self.variables["dmg_min"], self.variables["dmg_max"])
-        return damage
-
     def make_damage(self):
         if self.player.center_x > self.center_x:
             self.variables["face_direction"] = 0
         else:
             self.variables["face_direction"] = 1
-        if self.player.variables["actual_health_points"] - self.damage > 0:
-            self.player.variables["actual_health_points"] -= self.damage
+        if self.player.variables["actual_health_points"] - damage(self) > 0:
+            self.player.variables["actual_health_points"] -= damage(self)
         else:
             self.player.variables["actual_health_points"] = 0
         self.player.variables["is_hit"] = True

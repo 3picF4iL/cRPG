@@ -1,12 +1,10 @@
 import math
 import arcade
-import random
-
 from general.const import player_map1_opt
 from general.func import get_map_point
 from general.gui import GUI
 from general.entity.character.default_char import CharClass
-from ..entity_function import load_textures, face_dir_change, check_state
+from ..entity_function import load_textures, face_dir_change, check_state, damage
 
 
 class PlayerCharacter(arcade.Sprite, GUI, CharClass):
@@ -28,11 +26,6 @@ class PlayerCharacter(arcade.Sprite, GUI, CharClass):
         load_textures(textures_type, self.variables)
 
         self.hit_box = ([-100, -200], [-100, -100], [100, -100], [100, -200])
-
-    @property
-    def damage(self):
-        damage = random.randint(self.variables["dmg_min"], self.variables["dmg_max"])
-        return damage
 
     def click_event(self, click_x, click_y, enemy_list, wall_list):
         """
@@ -103,8 +96,8 @@ class PlayerCharacter(arcade.Sprite, GUI, CharClass):
             self.variables["face_direction"] = 0
         else:
             self.variables["face_direction"] = 1
-        if enemy.variables["actual_health_points"] - self.damage > 0:
-            enemy.variables["actual_health_points"] -= self.damage
+        if enemy.variables["actual_health_points"] - damage(self) > 0:
+            enemy.variables["actual_health_points"] -= damage(self)
         else:
             enemy.variables["actual_health_points"] = 0
         enemy.variables["is_hit"] = True
@@ -126,7 +119,6 @@ class PlayerCharacter(arcade.Sprite, GUI, CharClass):
         self.animation("walk", delta_time)
         if math.fabs(round(x_diff)) <= 1 and math.fabs(round(y_diff)) <= 1:
             self._stop()
-
 
     def reset_animation_state(self):
         self.variables["is_hit"] = False
