@@ -3,9 +3,7 @@ import re
 import arcade
 import arcade.gui
 import random
-from typing import Iterable
-from arcade.arcade_types import Point, Union
-from arcade import SpriteList
+from arcade.arcade_types import Point
 from win32api import GetKeyState, keybd_event
 from win32con import VK_CAPITAL, VK_NUMLOCK, VK_SCROLL, KEYEVENTF_KEYUP
 from typing import Tuple, Dict, Any, NoReturn, List
@@ -318,7 +316,6 @@ def rescale(view):
         view.screen_h = screen_h
         view.stage["camera"].resize(screen_w, screen_h)
         view.stage["gui_camera"].resize(screen_w, screen_h)
-        view.stage["player_list"][0].rescale()
 
 
 def get_map_point(map_point: Point, player_point: Point) -> Point:
