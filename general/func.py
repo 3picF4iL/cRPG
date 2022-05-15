@@ -264,7 +264,7 @@ def draw_highlighted_enemies(enemy_list, sw, sh):
 def _highlight_enemy(mouse_x, mouse_y, enemy_list):
     for enemy in arcade.get_sprites_at_point([mouse_x, mouse_y], enemy_list):
         print("je")
-        enemy.enemy_stats["is_highlighted"] = True
+        enemy.variables["is_highlighted"] = True
         break
     else:
         for enemy in enemy_list:

@@ -6,7 +6,7 @@ from general.const import player_map1_opt
 from general.func import get_map_point
 from general.gui import GUI
 from general.entity.character.default_char import CharClass
-from ..entity_function import load_textures, face_dir_change
+from ..entity_function import load_textures, face_dir_change, check_state
 
 
 class PlayerCharacter(arcade.Sprite, GUI, CharClass):
@@ -127,9 +127,6 @@ class PlayerCharacter(arcade.Sprite, GUI, CharClass):
         if math.fabs(round(x_diff)) <= 1 and math.fabs(round(y_diff)) <= 1:
             self._stop()
 
-    def _check_a_state(self):
-        if self.variables["animation_cur_state"] != self.variables["animation_last_state"]:
-            self.cur_texture_index = 0
 
     def reset_animation_state(self):
         self.variables["is_hit"] = False
@@ -139,7 +136,7 @@ class PlayerCharacter(arcade.Sprite, GUI, CharClass):
         what_type = animation_type if animation_type in animation_ else None
         if what_type:
             self.variables["animation_cur_state"] = animation_.index(what_type)
-            self._check_a_state()
+            check_state(self)
             self.cur_texture_index += 1
             if what_type == "attack":
                 if self.cur_texture_index == self.variables["attack_frame"] * self.variables["animation_attack_speed"] and enemy is not None:

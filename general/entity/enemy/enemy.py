@@ -3,7 +3,7 @@ import math
 import random
 from general.func import add_exp
 from general.const import ENEMY_STATS
-from ..entity_function import load_textures, face_dir_change
+from ..entity_function import load_textures, face_dir_change, check_state
 
 
 def load_enemy_stats(enemy_class):
@@ -27,10 +27,6 @@ class Enemy(arcade.Sprite):
         self.randomized_number = random.randrange(3, 8)
 
         self.hit_box = ([-100, -200], [-100, -100], [100, -100], [100, -200])
-
-    def _check_a_state(self):
-        if self.variables["animation_cur_state"] != self.variables["animation_last_state"]:
-            self.cur_texture_index = 0
 
     def is_player_in_radius(self):
         if self.player.center_x <= self.center_x + self.variables["radius"] or \
@@ -103,7 +99,7 @@ class Enemy(arcade.Sprite):
     def idle_animation(self, delta_time):
         if not self.variables["is_attacking"]:
             self.variables["animation_cur_state"] = 0
-            self._check_a_state()
+            check_state(self)
             self.cur_texture_index += 1
             if self.cur_texture_index >= \
                     self.variables["textures_idle_nr"] * self.variables["animation_idle_speed"]:
@@ -114,7 +110,7 @@ class Enemy(arcade.Sprite):
     def walk_animation(self, delta_time):
         if self.variables["is_moving"]:
             self.variables["animation_cur_state"] = 1
-            self._check_a_state()
+            check_state(self)
             self.cur_texture_index += 1
             if self.cur_texture_index >= \
                     self.variables["textures_walk_nr"] * self.variables["animation_walk_speed"]:
@@ -126,7 +122,7 @@ class Enemy(arcade.Sprite):
     def attack_animation(self):
         if self.variables["is_attacking"]:
             self.variables["animation_cur_state"] = 2
-            self._check_a_state()
+            check_state(self)
             self.cur_texture_index += 1
             if self.cur_texture_index == self.variables["attack_frame"] * self.variables["animation_attack_speed"]:
                 self.make_damage()
@@ -139,7 +135,7 @@ class Enemy(arcade.Sprite):
     def get_hurt(self, delta_time):
         if self.variables["is_hit"]:
             self.variables["animation_cur_state"] = 3
-            self._check_a_state()
+            check_state(self)
             self.cur_texture_index += 1
             if self.cur_texture_index >= \
                     self.variables["textures_hurt_nr"] * self.variables["animation_hurt_speed"]:
@@ -151,7 +147,7 @@ class Enemy(arcade.Sprite):
     def die(self, delta_time):
         self.hit_box = [[1,1], [1,0], [0, 1]]
         self.variables["animation_cur_state"] = 4
-        self._check_a_state()
+        check_state(self)
         self.cur_texture_index += 1
         if self.cur_texture_index >= \
                 self.variables["textures_dying_nr"] * self.variables["animation_dying_speed"]:
