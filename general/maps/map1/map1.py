@@ -1,6 +1,6 @@
 import arcade
 import arcade.gui
-from general.entity.char_class import PlayerCharacter
+from general.entity.character.player import PlayerCharacter
 from general.entity.enemy.enemy import Enemy
 from general.func import set_bg_color, set_player, checking_lockkey_states,\
     get_window_size, center_camera_to_player, set_enemies, \

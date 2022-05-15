@@ -138,10 +138,10 @@ class CharClass:
         return self.char_stats[res]
 
     def load_char_stats(self):
-        values = [line for line in open("general/entity/char_class/class_settings", "r").readlines()
+        values = [line for line in open("general/entity/character/class_settings", "r").readlines()
                   if line.startswith(str(self._class)) and not line.startswith("#")][0]
         # if len(values) != 3:
-        #     raise ValueError(f"More char_class character values({len(values)} than expected (3)!")
+        #     raise ValueError(f"More character character values({len(values)} than expected (3)!")
         values = values.split()
         values.pop(0)
 

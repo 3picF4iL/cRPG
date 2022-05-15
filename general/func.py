@@ -91,7 +91,7 @@ def set_player(char_class: int, player, scene: Any) -> NoReturn:
     Creating and inserting player object into player list (for future drawing)
 
     :param char_class: string with Char class name e.g. 0, mage, hunter etc.
-    :param player: Player char_class
+    :param player: Player character
     :param scene: Actual scene
     :param p_list: Player list
     """

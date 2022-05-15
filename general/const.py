@@ -82,10 +82,10 @@ stage_map1_opt = {
 
     # Other flags
     "on_path": True,  # changed from self.'path_walking', flag checking if the player is on the 'path'
-    # Should be moved to char_class player?
+    # Should be moved to character player?
     "debug_console": False,  # Check if the debug console is enabled
     # "enemy_file_conf": "general/enemy/enemy_settings"
-    "enemies_on_map": lambda filename="general/enemy/enemy_settings": [(f.read(), f.close()) for f in [open(filename)]][0][0]
+    "enemies_on_map": lambda filename="general/entity/enemy/enemy_settings": [(f.read(), f.close()) for f in [open(filename)]][0][0]
 
 }
 
