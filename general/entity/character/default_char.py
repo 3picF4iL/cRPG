@@ -10,15 +10,14 @@ class CharClass:
         """
         Class for characters stats keeping
 
-        :var self.char_stats: keeps standard values for character
-        :var self.char_stats: miscellaneous values
+        :var self.variables: keeps standard values for character
         :var self.char_resistances: character resistances
         """
         self._class = char_class
         # General stats
 
         self.stats = {
-            "char_stats": {
+            "variables": {
                 "str": 0,   # Strength
                 "dex": 0,   # Dexterity
                 "vit": 0,   # Vitality
@@ -88,54 +87,54 @@ class CharClass:
                 }
         }
 
-        self.char_stats = self.stats["char_stats"]
+        self.variables = self.stats["variables"]
         self.load_char_stats()
 
         """
         Set attribute - set specified value for the attribute
         Get attribute - get value of the attribute (e.g. str = 10)
         Change attribute - change attribute value by value (e.g. str = str + 1)
-        stat = {"char_stats", "char_resistances", "char_texure"}
+        stat = {"variables", "char_resistances", "char_texure"}
         attr = e.g "str", "dex" etc.
         value = integer/string etc.
         """
 
     def animation_speed_recalc(self):
-        self.char_stats["animation_walk_speed"] = self.char_stats["mvm"] // 100 * 2
-        self.char_stats["animation_attack_speed"] = self.char_stats["as"] // 10 * 2
+        self.variables["animation_walk_speed"] = self.variables["mvm"] // 100 * 2
+        self.variables["animation_attack_speed"] = self.variables["as"] // 10 * 2
 
     def level_up(self):
-        values_for_change = [self.char_stats["lvl_hp"], self.char_stats["lvl_mana"], self.char_stats["lvl_stamina"]]
+        values_for_change = [self.variables["lvl_hp"], self.variables["lvl_mana"], self.variables["lvl_stamina"]]
         for i, [attr, actual] in enumerate(zip(["max_hp", "max_mana", "stamina"],
                                                ["actual_health_points", "actual_mana_points", "actual_stamina_points"])):
             self.change_attribute(attr, int(values_for_change[i]))
             self.change_attribute(actual, int(values_for_change[i]))
 
     def set_attribute(self, attr, value):
-        self.char_stats[attr] = value
-        return self.char_stats[attr]
+        self.variables[attr] = value
+        return self.variables[attr]
 
     def get_attribute(self, attr):
-        return self.char_stats[attr]
+        return self.variables[attr]
 
     def change_attribute(self, attr, value):
         try:
-            self.char_stats[attr] += value
+            self.variables[attr] += value
         except TypeError:
             raise TypeError(f"Attribute {attr} cannot be changed by {value} because attr {attr} "
                             f"with attr {attr} is type {type(attr)} and value is type {type(value)}")
-        return self.char_stats[attr]
+        return self.variables[attr]
 
     def change_resistance(self, res, value):
-        self.char_stats[res] += value
-        return self.char_stats[res]
+        self.variables[res] += value
+        return self.variables[res]
 
     def get_resistance(self, res):
-        return self.char_stats[res]
+        return self.variables[res]
 
     def set_resistance(self, res, value):
-        self.char_stats[res] = value
-        return self.char_stats[res]
+        self.variables[res] = value
+        return self.variables[res]
 
     def load_char_stats(self):
         values = [line for line in open("general/entity/character/class_settings", "r").readlines()
@@ -145,7 +144,7 @@ class CharClass:
         values = values.split()
         values.pop(0)
 
-        _stats = list(self.char_stats.keys())
+        _stats = list(self.variables.keys())
         for j, (value, stat) in enumerate(zip(values, _stats)):
             if value is None or stat is None:
                 break

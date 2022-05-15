@@ -23,3 +23,8 @@ def face_dir_change(entity_variables, x):
         entity_variables["face_direction"] = 0
     elif x < 0:
         entity_variables["face_direction"] = 1
+
+
+def check_state(entity):
+    if entity.variables["animation_cur_state"] != entity.variables["animation_last_state"]:
+        entity.cur_texture_index = 0
