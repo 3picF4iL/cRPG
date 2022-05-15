@@ -1,4 +1,4 @@
-import arcade.arcade as arcade
+import arcade
 from random import randint
 
 ##################

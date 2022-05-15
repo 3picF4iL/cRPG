@@ -1,4 +1,4 @@
-import arcade.arcade as arcade
+import arcade
 from .settings_menu import Settings
 from general.maps.map1.map1 import GameViewStart
 from general.func import DefaultMenu

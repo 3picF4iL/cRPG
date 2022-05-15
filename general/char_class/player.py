@@ -1,5 +1,5 @@
 import math
-import arcade.arcade as arcade
+import arcade
 import random
 
 from general.const import player_map1_opt

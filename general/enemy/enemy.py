@@ -1,4 +1,4 @@
-import arcade.arcade as arcade
+import arcade
 import math
 import random
 from general.func import load_texture_pair_mod, add_exp

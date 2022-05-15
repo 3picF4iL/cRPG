@@ -6,7 +6,8 @@ from general.maps.map1.map1 import GameViewStart
 #arcade.configure_logging()
 
 def main():
-    window = set_window_with_size()
+    #window = set_window_with_size()
+    window = arcade.Window()
     # main_menu = MainMenu()
     # window.show_view(main_menu)
     game = GameViewStart()

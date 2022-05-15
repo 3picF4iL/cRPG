@@ -1,7 +1,7 @@
 """
 Temp desc
 """
-import arcade.arcade as arcade
+import arcade
 from .const import NEXT_LEVEL_EXP, SHORTCUTS, DND
 from .func import get_window_size
 
