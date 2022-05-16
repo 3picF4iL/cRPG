@@ -24,6 +24,7 @@ class GameViewStart(arcade.View):
 
         self.screen_w, self.screen_h = get_window_size()
         self.stage = stage_map1_opt
+        self.player = None
 
     def setup(self):
         # Map settings
@@ -35,11 +36,9 @@ class GameViewStart(arcade.View):
         self.stage["scene"] = arcade.Scene.from_tilemap(self.stage["tile_map"])
 
         # Player and entities settings
-        set_player(0,
-                   PlayerCharacter,
-                   self.stage["scene"])
-
-        self.player = self.stage["scene"].get_sprite_list(LAYER_NAME_PLAYER)[0]
+        self.player = set_player(0,
+                                 PlayerCharacter,
+                                 self.stage["scene"])
 
         set_enemies(
             self.stage["enemies_on_map"],
