@@ -91,7 +91,7 @@ def set_player(char_class: int, player, scene: Any) -> NoReturn:
     Creating and inserting player object into player list (for future drawing)
 
     :param char_class: string with Char class name e.g. 0, mage, hunter etc.
-    :param player: Player char_class
+    :param player: Player character
     :param scene: Actual scene
     :param p_list: Player list
     """
@@ -122,10 +122,10 @@ def set_enemies(filename: Any, enemy, scene: Any, player: Any) -> NoReturn:
             enemy_.personal_id = _
             enemy_.center_x = random.randint(int(line[3]), int(line[3]) + int(line[2]))
             enemy_.center_y = random.randint(int(line[4]), int(line[4]) + int(line[2]))
-            enemy_.enemy_stats["initial_x"] = enemy_.center_x
-            enemy_.enemy_stats["initial_y"] = enemy_.center_y
-            # enemy_.enemy_stats["dest_x"] = int(line[5])
-            # enemy_.enemy_stats["dest_y"] = int(line[6])
+            enemy_.variables["initial_x"] = enemy_.center_x
+            enemy_.variables["initial_y"] = enemy_.center_y
+            # enemy_.variables["dest_x"] = int(line[5])
+            # enemy_.variables["dest_y"] = int(line[6])
 
             # Adding enemy to entity group and enemy group
             scene.add_sprite(LAYER_NAME_ENEMIES, enemy_, visible=False)
@@ -161,7 +161,7 @@ def check_the_battle(enemy_list, player):
     for enemy in enemy_list:
         dist = arcade.get_distance_between_sprites(player, enemy)
         if dist < 150:
-            enemy.enemy_stats["player_in_radius"] = True
+            enemy.variables["player_in_radius"] = True
             # if arcade.get_distance_between_sprites(player, enemy) <= 50 and player.is_attacking:
             #     if enemy.get_hit(player.damage):
             #         add_exp(player, enemy)
@@ -175,26 +175,26 @@ def check_the_battle(enemy_list, player):
             # if not enemy.is_attacking:
             #     player.is_hit = False
         else:
-            enemy.enemy_stats["player_in_radius"] = False
+            enemy.variables["player_in_radius"] = False
 
 
 def add_exp(player, enemy):
-    player.char_stats["exp"] += enemy.enemy_stats["exp"]
-    enemy.enemy_stats["exp"] = 0
-    p_level = player.char_stats["lvl"]
-    p_exp = player.char_stats["exp"]
+    player.variables["exp"] += enemy.variables["exp"]
+    enemy.variables["exp"] = 0
+    p_level = player.variables["lvl"]
+    p_exp = player.variables["exp"]
     if p_exp < NEXT_LEVEL_EXP[p_level + 1]:
         return
     lvl_to_delete = []
     for lvl, exp in _NEXT_LEVEL_EXP.items():
         diff = p_exp - exp
         if diff >= 0:
-            player.char_stats["lvl"] += 1
+            player.variables["lvl"] += 1
             player.level_up()
             lvl_to_delete.append(lvl)
             p_exp -= exp
         else:
-            player.char_stats["exp"] = p_exp
+            player.variables["exp"] = p_exp
             break
 
     for lvl in lvl_to_delete:
@@ -244,15 +244,15 @@ def draw_highlighted_enemies(enemy_list, sw, sh):
     bar_height = 10
 
     for enemy in enemy_list:
-        if enemy.enemy_stats["is_highlighted"]:
-            health_width = bar_width * (enemy.enemy_stats["actual_health_points"] / enemy.enemy_stats["max_hp"])
+        if enemy.variables["is_highlighted"]:
+            health_width = bar_width * (enemy.variables["actual_health_points"] / enemy.variables["max_hp"])
             arcade.draw_rectangle_outline(sw / 2, sh - 15, bar_width + 1, bar_height + 1, [0, 0, 0])
             arcade.draw_rectangle_filled(center_x=sw / 2 - 0.5 * (bar_width - health_width),
                                          center_y=sh - 15,
                                          width=health_width,
                                          height=bar_height,
                                          color=red)
-            arcade.draw_text(f"{enemy.enemy_stats['enemy_name']} {enemy.enemy_stats['actual_health_points']} HP",
+            arcade.draw_text(f"{enemy.variables['enemy_name']} {enemy.variables['actual_health_points']} HP",
                              sw / 2 - 50,
                              sh - 20,
                              [255, 255, 255],
@@ -264,11 +264,11 @@ def draw_highlighted_enemies(enemy_list, sw, sh):
 def _highlight_enemy(mouse_x, mouse_y, enemy_list):
     for enemy in arcade.get_sprites_at_point([mouse_x, mouse_y], enemy_list):
         print("je")
-        enemy.enemy_stats["is_highlighted"] = True
+        enemy.variables["is_highlighted"] = True
         break
     else:
         for enemy in enemy_list:
-            enemy.enemy_stats["is_highlighted"] = False
+            enemy.variables["is_highlighted"] = False
 
 
 def _highlight_item(mouse_x, mouse_y, item_list):

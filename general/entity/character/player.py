@@ -1,11 +1,10 @@
 import math
 import arcade
-import random
-
 from general.const import player_map1_opt
-from general.func import load_texture_pair_mod, get_map_point
+from general.func import get_map_point
 from general.gui import GUI
-from general.char_class.default_char import CharClass
+from general.entity.character.default_char import CharClass
+from ..entity_function import load_textures, face_dir_change, check_state, damage
 
 
 class PlayerCharacter(arcade.Sprite, GUI, CharClass):
@@ -24,17 +23,9 @@ class PlayerCharacter(arcade.Sprite, GUI, CharClass):
         self.timer = 0
 
         textures_type = ["walk", "idle", "attack", "hurt"]
-        for texture_type in textures_type:
-            self.char_stats[f"textures_{texture_type}"], self.char_stats[f"textures_{texture_type}_nr"] = \
-                load_texture_pair_mod(self.char_stats["graphic_location"] + self.char_stats[f"textures_{texture_type}_file"],
-                                      720, 0, 490)
+        load_textures(textures_type, self.variables)
 
         self.hit_box = ([-100, -200], [-100, -100], [100, -100], [100, -200])
-
-    @property
-    def damage(self):
-        damage = random.randint(self.char_stats["dmg_min"], self.char_stats["dmg_max"])
-        return damage
 
     def click_event(self, click_x, click_y, enemy_list, wall_list):
         """
@@ -73,16 +64,16 @@ class PlayerCharacter(arcade.Sprite, GUI, CharClass):
 
     def _start(self, dest_x, dest_y):
         print("start")
-        self.char_stats["is_moving"] = True
-        self.char_stats["moving_dest_x"] = dest_x
-        self.char_stats["moving_dest_y"] = dest_y
-        self.face_dir_change(self.char_stats["moving_dest_x"] - self.center_x)
+        self.variables["is_moving"] = True
+        self.variables["moving_dest_x"] = dest_x
+        self.variables["moving_dest_y"] = dest_y
+        face_dir_change(self.variables, self.variables["moving_dest_x"] - self.center_x)
 
     def _stop(self):
         self.timer = 0
-        self.char_stats["is_moving"] = False
-        self.char_stats["moving_dest_x"] = None
-        self.char_stats["moving_dest_y"] = None
+        self.variables["is_moving"] = False
+        self.variables["moving_dest_x"] = None
+        self.variables["moving_dest_y"] = None
 
     def func_keys(self, key, mod):
         if key == arcade.key.TAB:
@@ -91,7 +82,7 @@ class PlayerCharacter(arcade.Sprite, GUI, CharClass):
             self.player_variables["is_attacking"] = True
 
     def _attack(self, enemy):
-        self.char_stats["is_attacking"] = True
+        self.variables["is_attacking"] = True
         self.target = enemy
 
     def attack(self, delta_time):
@@ -102,21 +93,21 @@ class PlayerCharacter(arcade.Sprite, GUI, CharClass):
         if not enemy:
             return
         if enemy.center_x > self.center_x:
-            self.char_stats["face_direction"] = 0
+            self.variables["face_direction"] = 0
         else:
-            self.char_stats["face_direction"] = 1
-        if enemy.enemy_stats["actual_health_points"] - self.damage > 0:
-            enemy.enemy_stats["actual_health_points"] -= self.damage
+            self.variables["face_direction"] = 1
+        if enemy.variables["actual_health_points"] - damage(self) > 0:
+            enemy.variables["actual_health_points"] -= damage(self)
         else:
-            enemy.enemy_stats["actual_health_points"] = 0
-        enemy.enemy_stats["is_hit"] = True
+            enemy.variables["actual_health_points"] = 0
+        enemy.variables["is_hit"] = True
 
     def moving(self, delta_time):
         print("ide")
         # self.timer += delta_time
         tmp_x = self.center_x
         tmp_y = self.center_y
-        goto_x, goto_y = self.char_stats["moving_dest_x"], self.char_stats["moving_dest_y"]
+        goto_x, goto_y = self.variables["moving_dest_x"], self.variables["moving_dest_y"]
         x_diff, y_diff = goto_x - self.center_x, goto_y - self.center_y
 
         angle = math.atan2(y_diff, x_diff)
@@ -129,53 +120,37 @@ class PlayerCharacter(arcade.Sprite, GUI, CharClass):
         if math.fabs(round(x_diff)) <= 1 and math.fabs(round(y_diff)) <= 1:
             self._stop()
 
-    def _check_a_state(self):
-        if self.char_stats["animation_cur_state"] != self.char_stats["animation_last_state"]:
-            self.cur_texture_index = 0
-    #
-    # def set_movement_speed(self, value):
-    #     self.char_stats["movement_speed"] = value
-    #
-    # def change_movement_speed(self, value):
-    #     self.char_stats["movement_speed"] += value
-
-    def face_dir_change(self, x):
-        if x > 0:
-            self.char_stats["face_direction"] = 0
-        elif x < 0:
-            self.char_stats["face_direction"] = 1
-
     def reset_animation_state(self):
-        self.char_stats["is_hit"] = False
+        self.variables["is_hit"] = False
 
     def animation(self, animation_type, delta_time, enemy=None):
         animation_ = ["idle", "walk", "attack", "hurt", "dying"]
         what_type = animation_type if animation_type in animation_ else None
         if what_type:
-            self.char_stats["animation_cur_state"] = animation_.index(what_type)
-            self._check_a_state()
+            self.variables["animation_cur_state"] = animation_.index(what_type)
+            check_state(self)
             self.cur_texture_index += 1
             if what_type == "attack":
-                if self.cur_texture_index == self.char_stats["attack_frame"] * self.char_stats["animation_attack_speed"] and enemy is not None:
+                if self.cur_texture_index == self.variables["attack_frame"] * self.variables["animation_attack_speed"] and enemy is not None:
                     self.make_damage(enemy)
-                    self.char_stats["is_hit"] = False
-            if self.cur_texture_index >= self.char_stats[f"textures_{what_type}_nr"] \
-                    * self.char_stats[f"animation_{what_type}_speed"]:
+                    self.variables["is_hit"] = False
+            if self.cur_texture_index >= self.variables[f"textures_{what_type}_nr"] \
+                    * self.variables[f"animation_{what_type}_speed"]:
                 self.cur_texture_index = 0
                 if what_type == "attack":
-                    self.char_stats["is_attacking"] = False
+                    self.variables["is_attacking"] = False
                 elif what_type == "hurt":
-                    self.char_stats["is_hit"] = False
-            self.texture = self.char_stats[f"textures_{what_type}"][self.cur_texture_index // self.char_stats[f"animation_{what_type}_speed"]][self.char_stats["face_direction"]]
-        self.char_stats["animation_last_state"] = self.char_stats["animation_cur_state"]
+                    self.variables["is_hit"] = False
+            self.texture = self.variables[f"textures_{what_type}"][self.cur_texture_index // self.variables[f"animation_{what_type}_speed"]][self.variables["face_direction"]]
+        self.variables["animation_last_state"] = self.variables["animation_cur_state"]
 
     def behavior(self, delta_time):
 
-        if self.char_stats["is_attacking"]:
+        if self.variables["is_attacking"]:
             self.attack(delta_time)
-        elif self.char_stats["is_moving"]:
+        elif self.variables["is_moving"]:
             self.moving(delta_time)
-        elif self.char_stats["is_hit"]:
+        elif self.variables["is_hit"]:
             self.animation("hurt", delta_time)
         else:
             self.animation("idle", delta_time)
