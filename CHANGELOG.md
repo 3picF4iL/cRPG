@@ -1,6 +1,6 @@
 # cRPG
-Game used "arcade" framework for simple 2D game creating.
-Changed game engine a lil bit and put it in the separate file.
+The game uses the arcade framework for simple 2D environment creation. \
+The forked arcade repository contains some changes to adjust the engine. 
 --------
 
 21.01.2022 - 1:14
